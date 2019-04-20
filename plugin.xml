@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.yakindu.sct.generator.core.generator">
+      <SCTGenerator 
+			executor="org.yakindu.sct.generator.core.execution.SExecGeneratorEntryExecutor"
+            bindings="be.ac.umons.bol.generator.sismic.SismicGeneratorModule"
+            description="Generate statechart for Python library, Sismic"
+            id="sismic::sctGenerator"
+            name="SismicGenerator"
+            contentType="statechart"
+            elementRefType="org.yakindu.sct.model.sgraph.Statechart">
+            <FeatureLibrary
+            	library_id="be.ac.umons.bol.generator.sismic.FeatureTypeLibrary">
+            </FeatureLibrary>
+            <FeatureLibrary
+            	library_id="org.yakindu.generator.core.features">
+            </FeatureLibrary>
+      </SCTGenerator>
+   </extension>
+<extension
+      point="org.yakindu.sct.generator.core.featuretypes">
+   <FeatureLibrary
+   	library_id="be.ac.umons.bol.generator.sismic.FeatureTypeLibrary"
+   	defaultProvider="be.ac.umons.bol.generator.sismic.SismicGeneratorDefaultValueProvider"
+   	uri="platform:/plugin/be.ac.umons.bol.generator.sismic/library/FeatureTypeLibrary.xmi">
+   </FeatureLibrary>
+</extension>
+ <extension point="org.yakindu.sct.generator.core.extensions">
+	 	<ExtensionGeneratorMapping fileExtension="sct" generatorId="sismic::sctGenerator">
+	 	</ExtensionGeneratorMapping>
+ 	</extension>
+</plugin>
