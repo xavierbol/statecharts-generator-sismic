@@ -14,14 +14,21 @@ import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 import be.ac.umons.bol.generator.sismic.specification.SpecificationState
 import java.util.ArrayList
 import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot
+import org.yakindu.sct.model.sgraph.FinalState
 
 /**
  * Generator to create a statechart for Sismic library in Python
  * Sismic library use YAML file to define a statechart.
+ * 
+ * TODO:
+ *  - Gérer les évènements always, oncycle et every
+ * 	- Gérer les états historiques
+ * 	- Gérer plusieurs interfaces créées dans un même statechart
  */
 class SismicGenerator implements ISGraphGenerator {
 	ArrayList<be.ac.umons.bol.generator.sismic.specification.Transition> listTransitionSuppl = null
 	SpecificationRoot specificationRoot
+	ArrayList <FinalState> listFinalState = new ArrayList
 
 	/**
 	 * Generate an output file with the generating of Statechart
@@ -44,8 +51,18 @@ class SismicGenerator implements ISGraphGenerator {
 	def dispatch String generate(Statechart it) '''
 		statechart:
 			name: «it.name»
+			«new SpecificationRoot(specification).generateYAML»
 			root state:
-				«regions.head.generate»
+				name: root
+				«IF regions.length > 1»
+					parallel states:
+						«FOR region : regions»
+						- name: «region.name»
+						  «region.generate»
+						«ENDFOR»
+				«ELSE»
+					«regions.head.generate»
+				«ENDIF»
 	'''
 	
 	/**
@@ -66,13 +83,15 @@ class SismicGenerator implements ISGraphGenerator {
 	 * if it's the first region, it will add name and initial keyword in YAML file
 	 */
 	def dispatch CharSequence generate(Region it) '''
-		«IF vertices.filter(Entry).head != null»
-			name: root
+		«IF vertices.filter(Entry).head !== null»
 			initial: «initialState»
-		«ENDIF»
+	  	«ENDIF»
 		states:
 			«FOR vertex : vertices.filter(State)»
 				«vertex.generate»
+			«ENDFOR»
+			«FOR finalState : listFinalState»
+				«finalState.generate»
 			«ENDFOR»
 	'''
 	
@@ -85,23 +104,49 @@ class SismicGenerator implements ISGraphGenerator {
 		
 		return '''
 			- name: «name»
-			  specification: «specification»
+			  «specificationState.generate»
 			  «IF outgoingTransitions.size > 0»
 			  transitions:
-			  	«FOR transition : outgoingTransitions»
-			  		«transition.generate»
-  			    «ENDFOR»
-  			  «ENDIF»
-  			  «IF specificationState.everyEvent !== null»
-				  «specificationState.everyEvent.generate»
-  			  «ENDIF»
+			    «FOR transition : outgoingTransitions»
+			      «transition.generate»
+			    «ENDFOR»
+			  «ENDIF»
+			  «IF isOrthogonal»
+			  	parallel states:
+			  		«IF specificationState.everyEvent !== null»
+			  			«specificationState.everyEvent.generate»
+			  		«ENDIF»
+			  		«FOR region : regions»
+			  			- name: «region.name»
+			  			  «region.generate»
+			  		«ENDFOR»
+			  «ELSEIF isComposite»
+			  	«IF specificationState.everyEvent !== null»
+			  		parallel states:
+			  		  - name: region_every
+			  		  «specificationState.everyEvent.generate»
+		  		«ENDIF»
+			  	«regions.head.generate»
+			  «ELSEIF specificationState.everyEvent !== null»
+			  	«specificationState.everyEvent.generate»
+			  «ENDIF»
 		'''
 	}
+	
+	def dispatch CharSequence generate(FinalState it) '''
+		- state: «name»
+		  type: final
+	'''
 	
 	/**
 	 * Generate Transition of a state
 	 */
 	def dispatch CharSequence generate(Transition it) {
+		if (target instanceof FinalState) {
+			target.name = target.parentRegion.name + "_f" + (listFinalState.length + 1)
+			listFinalState.add(target as FinalState)
+		}
+		
 		return '''
 			- target: «target.name»
 			  «new SpecificationTransition(specification).generate»
