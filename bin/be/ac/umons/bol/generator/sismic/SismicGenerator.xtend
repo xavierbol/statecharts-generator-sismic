@@ -10,6 +10,7 @@ import org.yakindu.sct.model.sgraph.Region
 import org.yakindu.sct.model.sgraph.Entry
 import org.yakindu.sct.model.sgraph.State
 import org.yakindu.sct.model.sgraph.Transition
+import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 
 /**
  * Generator to create a statechart for Sismic library in Python
@@ -87,9 +88,28 @@ class SismicGenerator implements ISGraphGenerator {
 	def dispatch CharSequence generate(Transition it) {
 		return '''
 			- target: «target.name»
-			  specification: «specification»
+			  «new SpecificationTransition(specification).generate»
 		'''
 	}
+	
+	def dispatch CharSequence generate(SpecificationTransition it) '''
+		«IF !event.empty»
+			event: «event»
+		«ENDIF»
+		«IF !guard.empty»
+			guard: «guard»
+		«ENDIF»
+		«IF !listActions.empty»
+			«IF listActions.length == 1»
+				action: «listActions.get(0)»
+			«ELSE»
+				action: |
+					«FOR action : listActions»
+						«action»
+					«ENDFOR»
+			«ENDIF»
+		«ENDIF»
+	'''
 
 	def write(File dir, String filename, String content) {
 		dir.mkdirs
