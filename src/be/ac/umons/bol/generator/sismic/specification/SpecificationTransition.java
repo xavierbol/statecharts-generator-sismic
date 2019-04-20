@@ -76,7 +76,7 @@ public class SpecificationTransition {
     private void treatActions(String action) {
         action = action.replaceAll("\\btrue\\b", "True"); // replace true by True
         action = action.replaceAll("\\bfalse\\b", "False"); // replace false by False
-        action = action.replaceAll("\\b(raise)\\s", "");
+        action = action.replaceAll("raise\\s*(.*)", "send(\"$1\")");
         action = action.replaceAll("\\bvalueof\\s*\\((\\w+)\\)\\s*", "event.$1");
         
         if (action.contains(";")) {
@@ -131,6 +131,7 @@ public class SpecificationTransition {
             }
         }
         event = event.replaceAll("\\.", "_");
+        event = event.replaceAll("\\b(always)\\b", ""); // always can be replaced by an auto transition
     }
 
     public String actionsToString() {

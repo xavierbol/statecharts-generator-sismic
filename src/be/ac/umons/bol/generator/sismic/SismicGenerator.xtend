@@ -11,6 +11,7 @@ import org.yakindu.sct.model.sgraph.Entry
 import org.yakindu.sct.model.sgraph.State
 import org.yakindu.sct.model.sgraph.Transition
 import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
+import be.ac.umons.bol.generator.sismic.specification.SpecificationState
 
 /**
  * Generator to create a statechart for Sismic library in Python
@@ -72,13 +73,20 @@ class SismicGenerator implements ISGraphGenerator {
 	 * In Yakindu, a state is a Vertex with a type State
 	 */
 	def dispatch CharSequence generate(State it) {
+		val specificationState = new SpecificationState(name, specification)
+		
 		return '''
 			- name: «name»
 			  specification: «specification»
+			  «IF outgoingTransitions.size > 0»
 			  transitions:
-				«FOR transition : outgoingTransitions»
-					«transition.generate»
-				«ENDFOR»
+			  	«FOR transition : outgoingTransitions»
+			  		«transition.generate»
+  			    «ENDFOR»
+  			  «ENDIF»
+  			  «IF specificationState.everyEvent !== null»
+				  «specificationState.everyEvent.generate»
+  			  «ENDIF»
 		'''
 	}
 	
