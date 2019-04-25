@@ -1,22 +1,25 @@
-# Statecharts generator from Yakindu into Sismic
-This generator generate a statechart in Yakindu (file with the extension sct) into a statechart for the Sismic
+# Generating Python Sismic statechart code from Yakindu statecharts
+Ce projet a comme objectif de générer un statechart créé avec le logiciel Yakindu (fichier avec l'extension *sct*) en un statechart interprétable par une librarie Python, nommé Sismic.
 
-Sismic is a library in Python, developped and maintained mainly by Dr. Alexandre Decan
+## Sismic
+Sismic est une librairie Python, créé et maintenue principale par le Dr. Alexandre Decan. Cette librairie est disponible en [open source](https://github.com/AlexandreDecan/sismic) et sa [documentation](https://sismic.readthedocs.io/en/latest/) est disponible en anglais.
 
-## Requirements
-
-- Java 8 or more
-
-- Yakindu Statechart Tools
-
-## How use this generator ?
+## Comment installer le générateur ?
+### Pré-requis
+D'avoir installé sur votre machine :
+ - Java 8 ou plus
+ - Yakindu Statechart Tools
 
 ### Installation
+Vous pouvez installer le générateur en clonant ce répertoire.
 
-Install this project by cloning it, open Yakindu Statechart Tool and click on File > Open a project...
-and choose the directory contained this project.
+## Comment utiliser l'outil ?
+Il faut que vous importiez l'outil comme projet dans le logiciel Yakindu Statechart Tools et que vous créiez ou importez vos statechart dans le projet.
 
-### Use it
+Vous avez ensuite 2 possibilités :
+ - Utiliser ou bien copier le modèle du générateur du projet nommé [example.sgen](example.sgen) en remplaçant [nameStatechart] (en enlevant également les crochets) par le nom de votre Statechart.
 
-In Yakindu Statechart Tools, you can create or import some statecharts in the project.
-If you have a statechart in this project, you must add generator model in the project, like this :
+ - Créer un nouveau modèle de générateur en cliquant à la racine du projet > New... > Code Model generator
+    vous pourrez ensuite nommé comme vous le souhaitez.
+
+Une fois avoir sauvegarde le modèle, le générateur créera deux fichiers dans le dossier src-gen. Le premier fichier est un fichier YAML contenant le statechart généré pour Sismic et le second est un fichier Python, contenant un début interprétation du statechart généré en utilisant en important la librairie Sismic.
