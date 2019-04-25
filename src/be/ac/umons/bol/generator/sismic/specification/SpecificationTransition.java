@@ -10,7 +10,7 @@ public class SpecificationTransition {
     private ArrayList<String> listActions;
 
     public SpecificationTransition(String specification) {
-        if (specification.length() > 0) {
+        if (specification.isEmpty()) {
             listActions = new ArrayList<String>();
             this.extractSpecifications(specification);
         }

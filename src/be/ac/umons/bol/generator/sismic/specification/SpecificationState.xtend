@@ -79,7 +79,7 @@ class SpecificationState {
 	
 	private def extractRaiseAction(String action) {
 		if (action.matches("raise\\s*(.*)")) {
-            return action.replaceAll("raise\\s*(.*)", "send($1)");
+            return action.replaceAll("raise\\s*(.*)", "send(\"$1\")");
         }
         
         return action

@@ -9,7 +9,7 @@ import java.util.ArrayList
  */
 class EveryEvent {
 	static String EVERY = "_every"
-	@Accessors float time;
+	@Accessors float time
 	@Accessors String nameState
 	@Accessors ArrayList<String> actions
 	

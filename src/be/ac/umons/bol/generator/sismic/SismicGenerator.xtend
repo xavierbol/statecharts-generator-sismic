@@ -15,6 +15,7 @@ import be.ac.umons.bol.generator.sismic.specification.SpecificationState
 import java.util.ArrayList
 import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot
 import org.yakindu.sct.model.sgraph.FinalState
+import org.yakindu.sct.model.sgraph.EntryKind
 
 /**
  * Generator to create a statechart for Sismic library in Python
@@ -74,6 +75,20 @@ class SismicGenerator implements ISGraphGenerator {
 		region.vertices.filter(Entry).head.outgoingTransitions.head.target.name
 	}
 	
+	def private Entry historyState(Region region) {
+		val entry = region.vertices.filter(Entry)
+		
+		if (entry !== null) {
+			for (e : entry) {
+				if (e.kind !== EntryKind.INITIAL) {
+					return e
+				}
+			}			
+		}
+		
+		return null
+	}
+	
 	/**
 	 * Generate an region
 	 * This region can be :
@@ -93,6 +108,9 @@ class SismicGenerator implements ISGraphGenerator {
 			«FOR finalState : listFinalState»
 				«finalState.generate»
 			«ENDFOR»
+			«IF historyState !== null»
+				«historyState.generate»
+			«ENDIF»
 	'''
 	
 	/**
@@ -138,12 +156,27 @@ class SismicGenerator implements ISGraphGenerator {
 		  type: final
 	'''
 	
+	def dispatch CharSequence generate(Entry it) {
+		var history = ""
+		
+		if (kind == EntryKind.DEEP_HISTORY) {
+			history = "deep history"
+		} else if (kind == EntryKind.SHALLOW_HISTORY) {
+			history = "shallow history"
+		}
+		
+		return '''
+			- name: «name»
+			  type: «history»
+		'''
+	}
+	
 	/**
 	 * Generate Transition of a state
 	 */
 	def dispatch CharSequence generate(Transition it) {
 		if (target instanceof FinalState) {
-			target.name = target.parentRegion.name + "_f" + (listFinalState.length + 1)
+			target.name = target.parentRegion.name + "_final" + (listFinalState.length + 1)
 			listFinalState.add(target as FinalState)
 		}
 		
@@ -160,7 +193,7 @@ class SismicGenerator implements ISGraphGenerator {
 		«IF !guard.empty»
 			guard: «guard»
 		«ENDIF»
-		«IF !listActions.empty»
+		«IF listActions !== null && !listActions.empty»
 			«IF listActions.length == 1»
 				action: «listActions.get(0)»
 			«ELSE»
