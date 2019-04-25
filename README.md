@@ -2,7 +2,7 @@
 Ce projet a comme objectif de générer un statechart créé avec le logiciel Yakindu (fichier avec l'extension *sct*) en un statechart interprétable par une librarie Python, nommé Sismic.
 
 ## Sismic
-Sismic est une librairie Python, créé et maintenue principale par le Dr. Alexandre Decan. Cette librairie est disponible en [open source](https://github.com/AlexandreDecan/sismic) et sa [documentation](https://sismic.readthedocs.io/en/latest/) est disponible en anglais.
+Sismic est une librairie Python, créée et maintenue principalement par le Dr. Alexandre Decan. Cette librairie est disponible en [open source](https://github.com/AlexandreDecan/sismic) et sa [documentation](https://sismic.readthedocs.io/en/latest/) est disponible en anglais.
 
 ## Comment installer le générateur ?
 ### Pré-requis
