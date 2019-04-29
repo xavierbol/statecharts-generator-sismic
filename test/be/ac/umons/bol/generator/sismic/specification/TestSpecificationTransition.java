@@ -2,6 +2,7 @@ package be.ac.umons.bol.generator.sismic.specification;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestSpecificationTransition {
 	String specification;
@@ -13,15 +14,19 @@ public class TestSpecificationTransition {
 		
 		st = new SpecificationTransition(specification);
 		
-		System.out.println(st.getGuard());
-		
-		if (st.getListActions() != null && !st.getListActions().isEmpty()) {
-			for (String action : st.getListActions())
-				System.out.println(action);			
-		}
-		
 		assertEquals("", st.getEvent());
-		assertEquals("currentFloor > 0 && after(5.0)", st.getGuard());
+		assertEquals("currentFloor > 0 and after(5.0)", st.getGuard());
 		assertEquals("floor =0", st.getListActions().get(0));
+	}
+	
+	@Test
+	public void testSpecificationTransitionEvent() {
+		specification = "openDoors";
+		
+		st = new SpecificationTransition(specification);
+		
+		assertEquals("openDoors", st.getEvent());
+		assertEquals("", st.getGuard());
+		assertTrue(st.getListActions().isEmpty());
 	}
 }

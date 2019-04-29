@@ -19,7 +19,7 @@ class SismicInterpreter {
 		# Load statechart from yaml file
 		«sc.name» = import_from_yaml(filepath='«sc.name».yaml')
 		
-		«IF specificationRoot != null && specificationRoot.operations != null && !specificationRoot.operations.empty»
+		«IF specificationRoot !== null && specificationRoot.operations !== null && !specificationRoot.operations.empty»
 			«FOR operation : specificationRoot.operations»
 				«operation»
 					...

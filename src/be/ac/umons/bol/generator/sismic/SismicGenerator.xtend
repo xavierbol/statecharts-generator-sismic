@@ -22,8 +22,7 @@ import org.yakindu.sct.model.sgraph.EntryKind
  * Sismic library use YAML file to define a statechart.
  * 
  * TODO:
- *  - Gérer les évènements always, oncycle et every
- * 	- Gérer les états historiques
+ *  - Vérifier la gestion des évènements always et oncycle
  * 	- Gérer plusieurs interfaces créées dans un même statechart
  */
 class SismicGenerator implements ISGraphGenerator {
@@ -75,6 +74,13 @@ class SismicGenerator implements ISGraphGenerator {
 		region.vertices.filter(Entry).head.outgoingTransitions.head.target.name
 	}
 	
+	/**
+	 * Search a history State in the current region
+	 * 
+	 * region : the current region
+	 * 
+	 * return the entry that is a history state or null if there is no history state
+	 */
 	def private Entry historyState(Region region) {
 		val entry = region.vertices.filter(Entry)
 		
@@ -151,11 +157,23 @@ class SismicGenerator implements ISGraphGenerator {
 		'''
 	}
 	
+	/**
+	 * Generate the final states
+	 * Normally this final states are detected in outgoingTransition of the others states
+	 */
 	def dispatch CharSequence generate(FinalState it) '''
 		- state: «name»
 		  type: final
 	'''
 	
+	/**
+	 * Generate the history states
+	 * Yakindu define the history as an initial state with an attribute kind
+	 * to find the enumeration of this state
+	 * A history state has as value in kind attribute :
+	 * 	- EntryKind.DEEP_HISTORY
+	 * 	- EntryKind.SHALLOW_HISTORY
+	 */
 	def dispatch CharSequence generate(Entry it) {
 		var history = ""
 		
@@ -186,6 +204,9 @@ class SismicGenerator implements ISGraphGenerator {
 		'''
 	}
 	
+	/**
+	 * Generate the data extracted in the specification of the outgoingTransition tag.
+	 */
 	def dispatch CharSequence generate(SpecificationTransition it) '''
 		«IF !event.empty»
 			event: «event»
