@@ -12,7 +12,7 @@ public class TestSpecificationState {
     @Test
     public void testSpecificationState() {
         specification = "entry / raise MW.startHeating\n" +
-                "every 1s / MW.duration -=1\n" +
+                "every 1s / MW.duration -= 1\n" +
                 "exit / raise MW.stopHeating";
         
         specificationState = new SpecificationState("test", specification);
@@ -23,6 +23,6 @@ public class TestSpecificationState {
         Assert.assertEquals("send(\"MW.stopHeating\")", specificationState.getListExitEvent().get(0));
         Assert.assertTrue(specificationState.getEveryEvent() != null);
         Assert.assertEquals("test_every", specificationState.getEveryEvent().getNameState());
-        Assert.assertEquals("MW.duration -=1", specificationState.getEveryEvent().getActions().get(0));
+        Assert.assertEquals("MW.duration -= 1", specificationState.getEveryEvent().getActions().get(0));
     }
 }
