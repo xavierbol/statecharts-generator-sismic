@@ -234,7 +234,7 @@ class SpecificationState {
 			on exit: «listExitEvent.get(0)»
 		«ELSE»
 			on exit: |
-		  		«FOR exitEvent : listExitEvent»
+				«FOR exitEvent : listExitEvent»
 					«exitEvent»
 				«ENDFOR»
 		«ENDIF»
