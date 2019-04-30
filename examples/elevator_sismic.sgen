@@ -1,0 +1,16 @@
+GeneratorModel for yakindu::generic {
+
+	statechart ElevatorSismic {
+
+		feature Outlet {
+			targetProject = "statecharts-generator-sismic"
+			targetFolder = "src-gen"
+			libraryTargetFolder = "src"
+		}
+
+		feature Generator {
+			generatorProject = "statecharts-generator-sismic"
+			generatorClass = "be.ac.umons.bol.generator.sismic.SismicGenerator"
+		}
+	}
+}
