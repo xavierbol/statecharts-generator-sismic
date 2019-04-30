@@ -116,7 +116,7 @@ class SismicGenerator implements ISGraphGenerator {
 			«ENDFOR»
 			«IF historyState !== null»
 				«historyState.generate»
-			«ENDIF»
+			«ENDIF»«listFinalState.clear»
 	'''
 	
 	/**
@@ -178,7 +178,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * Normally this final states are detected in outgoingTransition of the others states
 	 */
 	def dispatch CharSequence generate(FinalState it) '''
-		- state: «name»
+		- name: «name»
 		  type: final
 	'''
 	
