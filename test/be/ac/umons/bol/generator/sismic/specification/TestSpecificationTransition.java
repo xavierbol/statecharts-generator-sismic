@@ -29,4 +29,37 @@ public class TestSpecificationTransition {
 		assertEquals("", st.getGuard());
 		assertTrue(st.getListActions().isEmpty());
 	}
+	
+	@Test
+	public void testActions() {
+	    specification = "/floor = 0; currentFloor = 0";
+	    st = new SpecificationTransition(specification);
+	    
+	    String[] expectedActions = {"floor = 0", "currentFloor = 0"};
+	    
+	    assertEquals(expectedActions.length, st.getListActions().size());
+	    
+	    for (int i = 0; i < expectedActions.length; i++) {
+	        assertEquals(expectedActions[i], st.getListActions().get(i));
+	    }
+	}
+	
+	@Test
+	public void testExtractEventAndGuard() {
+	    specification = "floorSelected\n[floor> currentFloor]";
+	    st = new SpecificationTransition(specification);
+	    
+	    assertTrue(st.getEvent() != null && !st.getEvent().isEmpty());
+	    assertEquals("floorSelected", st.getEvent());
+	    assertTrue(st.getGuard()!= null && !st.getGuard().isEmpty());
+	    assertEquals("floor> currentFloor", st.getGuard());
+	    
+	    specification = "floorSelected\n[floor < currentFloor && floor >=0]";
+	    st = new SpecificationTransition(specification);
+	    
+	    assertTrue(st.getEvent() != null && !st.getEvent().isEmpty());
+	    assertEquals("floorSelected", st.getEvent());
+	    assertTrue(st.getGuard()!= null && !st.getGuard().isEmpty());
+	    assertEquals("floor < currentFloor and floor >=0", st.getGuard());
+	}
 }

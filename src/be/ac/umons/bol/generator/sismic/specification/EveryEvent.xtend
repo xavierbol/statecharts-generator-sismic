@@ -19,7 +19,7 @@ class EveryEvent {
 	}
 	
 	new(String name, float time, ArrayList<String> actions) {
-		this(name, time);
+		this(name, time)
 		this.actions = actions
 	}
 	

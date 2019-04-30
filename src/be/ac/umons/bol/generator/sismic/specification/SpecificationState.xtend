@@ -10,8 +10,8 @@ enum Event {
 }
 
 class SpecificationState {
-	// Liste contenant toutes les actions en fonction du type de l'évènement
 	@Accessors String nameState
+	// List containing all actions according to the type of the event
 	@Accessors ArrayList<String> listEntryEvent
 	@Accessors ArrayList<String> listExitEvent
 	@Accessors Transition transition
@@ -40,6 +40,13 @@ class SpecificationState {
 		}
 	}
 	
+	/**
+	 * Define the type of event
+	 * 
+	 * @param event is the event extracted in the state to search its type
+	 * 
+	 * @return the type of this event
+	 */
 	private def defineEvent(String event) {
 		if (event.equals("entry")) {
 			if (listEntryEvent === null) {
@@ -77,6 +84,12 @@ class SpecificationState {
 		return null
 	}
 	
+	/**
+	 * Extract the raise keyword in an action given in parameter
+	 * In Sismic, the raise keyword must be transformed by send(...)
+	 * 
+	 * @param action is the action to extract the raise keyword
+	 */
 	private def extractRaiseAction(String action) {
 		if (action.matches("raise\\s*(.*)")) {
             return action.replaceAll("raise\\s*(.*)", "send(\"$1\")");
@@ -85,6 +98,13 @@ class SpecificationState {
         return action
 	}
 	
+	/**
+	 * Add an action into the correct list according to the type of event
+	 * containing the action
+	 * 
+	 * @param event is the type of the event containing the action
+	 * @param action is the action to add into a list
+	 */
 	private def addAction(Event event, String action) {
 		var a = extractRaiseAction(action)
 		
@@ -102,6 +122,14 @@ class SpecificationState {
         }
 	}
 	
+	/**
+	 * Manage the every event because Sismic doesn't have every event.
+	 * If this event is containing into this current, then we must add a new region
+	 * into this state. In this region, a new state is created with a self transition
+	 * where it contains after keyword as guard.
+	 * 
+	 * @param event is the current event to find and manage the eventual every event
+	 */
 	private def manageEveryEvent(String event) {
 		var regex = "every (\\d+)(ms|s|m|h)";
         var p = Pattern.compile(regex);
@@ -125,30 +153,30 @@ class SpecificationState {
         }
 	}
 	
-	def generate() {
-		
-		return 
-		'''
-		  «IF listEntryEvent != null && listEntryEvent.length > 0»
-		  	«IF listEntryEvent.length == 1»
-		  		on entry: «listEntryEvent.get(0)»
-		  	«ELSE»
-			on entry: |
-				«FOR entryEvent : listEntryEvent»
-					«entryEvent»
+	/**
+	 * Generate the extracted data into this current state
+	 * The onecycle, always and every event aren't generated here
+	 */
+	def generate() '''
+	  «IF listEntryEvent !== null && listEntryEvent.length > 0»
+	  	«IF listEntryEvent.length == 1»
+	  		on entry: «listEntryEvent.get(0)»
+	  	«ELSE»
+		on entry: |
+			«FOR entryEvent : listEntryEvent»
+				«entryEvent»
+			«ENDFOR»
+	  	«ENDIF»
+	  «ENDIF»
+	  «IF listExitEvent !== null && listExitEvent.length > 0»
+		«IF listExitEvent.length == 1»
+			on exit: «listExitEvent.get(0)»
+		«ELSE»
+			on exit: |
+		  		«FOR exitEvent : listExitEvent»
+					«exitEvent»
 				«ENDFOR»
-		  	«ENDIF»
-		  «ENDIF»
-		  «IF listExitEvent != null && listExitEvent.length > 0»
-			«IF listExitEvent.length == 1»
-				on exit: «listExitEvent.get(0)»
-			«ELSE»
-				on exit: |
-			  		«FOR exitEvent : listExitEvent»
-						«exitEvent»
-					«ENDFOR»
-			«ENDIF»
-		  «ENDIF»
-		'''
-	}
+		«ENDIF»
+	  «ENDIF»
+	'''
 }

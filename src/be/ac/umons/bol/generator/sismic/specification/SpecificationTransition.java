@@ -64,7 +64,7 @@ public class SpecificationTransition {
 
                     txt.getChars(0, firstIndex, charEvent, 0);
 
-                    event = String.valueOf(charEvent);
+                    event = String.valueOf(charEvent).trim();
                 }
             } else {
                 event = txt;
