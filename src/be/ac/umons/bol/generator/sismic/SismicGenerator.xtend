@@ -126,14 +126,30 @@ class SismicGenerator implements ISGraphGenerator {
 	def dispatch CharSequence generate(State it) {
 		val specificationState = new SpecificationState(name, specification)
 		
+		val exist_transitions = outgoingTransitions.size > 0 || (specificationState.listOtherEvent !== null && !specificationState.listOtherEvent.isEmpty)
+		var transitions = ""
+		
+		if (exist_transitions) {
+			transitions = '''
+				«IF specificationState.listOtherEvent !== null && !specificationState.listOtherEvent.isEmpty»
+				  	«FOR transition : specificationState.listOtherEvent»
+				  		«transition.generate»
+					«ENDFOR»
+			  	«ENDIF»
+			  	«IF outgoingTransitions.size > 0»
+				    «FOR transition : outgoingTransitions»
+				      «transition.generate»
+				    «ENDFOR»
+			    «ENDIF»
+			'''
+		}
+		
 		return '''
 			- name: «name»
 			  «specificationState.generate»
-			  «IF outgoingTransitions.size > 0»
+			  «IF exist_transitions»
 			  transitions:
-			    «FOR transition : outgoingTransitions»
-			      «transition.generate»
-			    «ENDFOR»
+			  	«transitions»
 			  «ENDIF»
 			  «IF isOrthogonal»
 			  	parallel states:

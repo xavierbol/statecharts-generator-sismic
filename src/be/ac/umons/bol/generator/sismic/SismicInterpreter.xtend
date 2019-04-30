@@ -12,7 +12,7 @@ import java.util.ArrayList
  * dans le preamble du fichier yaml et définir les functions dans le fichier python.
  */
 class SismicInterpreter {
-	static public def content(Statechart sc, SpecificationRoot specificationRoot) '''
+	static def content(Statechart sc, SpecificationRoot specificationRoot) '''
 		from sismic.io import import_from_yaml
 		from sismic.interpreter import Interpreter
 		
@@ -32,7 +32,7 @@ class SismicInterpreter {
 		«ENDIF»
 		
 		# Create an interpreter for this statechart
-		interpreter = Interpreter(elevator, initial_context=context)
+		interpreter = Interpreter(«sc.name», initial_context=context)
 		
 		print('Before:', interpreter.configuration)
 		

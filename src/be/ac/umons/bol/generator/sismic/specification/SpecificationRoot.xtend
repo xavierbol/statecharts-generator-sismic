@@ -16,7 +16,7 @@ import be.ac.umons.bol.generator.sismic.Utils
  */
 class SpecificationRoot {
 	static val REGEX_INTERFACE = ""
-	static val REGEX_OPERATION = "operation\\s+(.*)\\(((.*)\\s*:\\s*(.*))?\\)\\s*:\\s*(\\w*)"
+	static val REGEX_OPERATION = "operation\\s+(.*)\\(((.*)\\s*:\\s*(.*))?\\)\\s*(:\\s*(\\w*))?"
 	static val REGEX_VARIABLE = "var\\s+(.*):\\s*(\\w+)(\\s*=\\s*(.*))?"
 	
 	@Accessors ArrayList<String> context;
@@ -41,7 +41,7 @@ class SpecificationRoot {
 		if (m.find()) {
 			val name = m.group(1)			
 			val parameters = m.group(2)
-			val typeReturn = m.group(5)
+			val typeReturn = m.group(6)
 			
 			var StringBuilder funcPython = new StringBuilder("def " + name + "(")
 			
@@ -62,7 +62,9 @@ class SpecificationRoot {
 				}
 			}
 			
-			funcPython.append(") -> " + Utils.translateTypeInPythonType(typeReturn) + ":") 
+			
+			funcPython.append(") -> " + Utils.translateTypeInPythonType(typeReturn) + ":")
+			
 			
 			if (operations === null) {
 				operations = new ArrayList

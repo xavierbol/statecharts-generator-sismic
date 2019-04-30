@@ -14,6 +14,7 @@ class SpecificationState {
 	// List containing all actions according to the type of the event
 	@Accessors ArrayList<String> listEntryEvent
 	@Accessors ArrayList<String> listExitEvent
+	@Accessors ArrayList<Transition> listOtherEvent
 	@Accessors Transition transition
 	@Accessors EveryEvent everyEvent
 	
@@ -25,17 +26,33 @@ class SpecificationState {
 	}
 	
 	private def retrieveSpecifications(String specifications) {
-		val tabSpecifications = specifications.split('\n')
+		val tabSpecifications = specifications.replaceAll('\t', '').split('\n')
 		
 		var Event lastEvent = null
+		var event = ""
+		
 		for (specification : tabSpecifications) {
 			val tab = specification.split('/')
 			
-			if (tab.length == 1) { // alors il n'y a pas de / dans la chaine de caractères
-				addAction(lastEvent, tab.get(0).trim())
+			if (tab.length == 1) {
+				if (specification.contains('/')) {
+					event = tab.get(0).trim()
+					lastEvent = defineEvent(event)
+				} else {
+					if (lastEvent === null) {
+						manageActions(event, tab.get(0).trim())
+					} else {
+						manageActions(lastEvent, tab.get(0).trim())					
+					}					
+				}
 			} else {
-				lastEvent = defineEvent(tab.get(0).trim())
-				addAction(lastEvent, tab.get(1).trim())
+				event = tab.get(0).trim()
+				lastEvent = defineEvent(event)
+				if (lastEvent === null) {
+					manageActions(event, tab.get(1).trim())
+				} else {
+					manageActions(lastEvent, tab.get(1).trim())
+				}
 			}
 		}
 	}
@@ -84,19 +101,65 @@ class SpecificationState {
 		return null
 	}
 	
-	/**
-	 * Extract the raise keyword in an action given in parameter
-	 * In Sismic, the raise keyword must be transformed by send(...)
-	 * 
-	 * @param action is the action to extract the raise keyword
-	 */
-	private def extractRaiseAction(String action) {
-		if (action.matches("raise\\s*(.*)")) {
-            return action.replaceAll("raise\\s*(.*)", "send(\"$1\")");
+	private def manageActions(Event event, String action) {
+		val a = treatActions(action)
+		if (action.contains(";")) {
+            val tabActions = a.split(";");
+
+            for (elem : tabActions) {
+                addAction(event, elem.trim());
+            }
+        } else {
+            addAction(event, a);
+        }
+	}
+	
+	private def manageActions(String event, String action) {
+		val a = treatActions(action)
+		
+		var transition = searchTransition(event)
+		
+		if (transition === null) {
+			transition = new Transition(nameState, event)
+		}
+		
+		if (action.contains(";")) {
+            val tabActions = a.split(";")
+
+            for (elem : tabActions) {
+                transition.addAction(elem.trim())
+            }
+        } else {
+            transition.addAction(a)
         }
         
-        return action
+        if (listOtherEvent === null) {
+        	listOtherEvent = new ArrayList
+        }
+        
+        listOtherEvent.add(transition)
 	}
+	
+	private def searchTransition(String event) {
+		if (listOtherEvent !== null) {
+			for (var i = 0; i < listOtherEvent.size(); i++) {
+				if (listOtherEvent.get(i).getEvent().equals(event)) {
+					return listOtherEvent.remove(i)
+				}
+			}
+		}
+		
+		return null
+	}
+	
+	private def treatActions(String action) {
+        var a = action.replaceAll("\\btrue\\b", "True") // replace true by True
+        a = a.replaceAll("\\bfalse\\b", "False") // replace false by False
+        a = a.replaceAll("raise\\s*(\\w+\\.*\\w*);?", "send(\"$1\")")
+        a = a.replaceAll("\\bvalueof\\s*\\((\\w+)\\)\\s*", "event.$1")
+        
+        return a
+    }
 	
 	/**
 	 * Add an action into the correct list according to the type of event
@@ -105,20 +168,18 @@ class SpecificationState {
 	 * @param event is the type of the event containing the action
 	 * @param action is the action to add into a list
 	 */
-	private def addAction(Event event, String action) {
-		var a = extractRaiseAction(action)
-		
+	private def addAction(Event event, String action) {		
         switch (event) {
             case ENTRY:
-                listEntryEvent.add(a)
+                listEntryEvent.add(action)
             case EXIT:
-                listExitEvent.add(a)
+                listExitEvent.add(action)
             case ALWAYS:
-                transition.addAction(a)
+                transition.addAction(action)
             case EVERY:
-                everyEvent.addAction(a)
+                everyEvent.addAction(action)
             case ONCYCLE:
-                transition.addAction(a)
+                transition.addAction(action)
         }
 	}
 	
