@@ -20,7 +20,7 @@ class SpecificationState {
 	
 	new(String name, String specifications) {
 		nameState = name
-		if (specifications !== null) {
+		if (specifications !== null && !specifications.empty) {
 			retrieveSpecifications(specifications)			
 		}
 	}

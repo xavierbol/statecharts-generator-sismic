@@ -95,6 +95,8 @@ public class SpecificationTransition {
         guard = guard.replaceAll("(\\s)\\|\\|(\\s)", "$1or$2"); // replace || by or
         guard = guard.replaceAll("\\btrue\\b", "True"); // replace true by True
         guard = guard.replaceAll("\\bfalse\\b", "False"); // replace true by False
+        guard = guard.replaceAll("!([^=])", "not $1"); // replace negation ! by not
+        guard = guard.replaceAll("(active\\()(.*\\.(.*))(\\))", "$1'$3'$4"); // replace for example active(Car.On.r1.Driving) by active('Driving')
     }
 
     private void treatEvent() {
