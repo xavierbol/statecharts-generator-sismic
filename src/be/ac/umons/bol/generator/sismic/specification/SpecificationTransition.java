@@ -116,11 +116,11 @@ public class SpecificationTransition {
                 case "ms":
                     value /= 1000;
                     break;
-                case "m":
-                    value *= 60;
+                case "us":
+                    value *= 10^6;
                     break;
-                case "h":
-                    value *= 60 * 24;
+                case "ns":
+                    value *= 10^9;
                     break;
             }
 
