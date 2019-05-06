@@ -10,12 +10,12 @@ import org.yakindu.sct.model.sgraph.Region
 import org.yakindu.sct.model.sgraph.Entry
 import org.yakindu.sct.model.sgraph.State
 import org.yakindu.sct.model.sgraph.Transition
-import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 import be.ac.umons.bol.generator.sismic.specification.SpecificationState
 import java.util.ArrayList
 import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot
 import org.yakindu.sct.model.sgraph.FinalState
 import org.yakindu.sct.model.sgraph.EntryKind
+import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 
 /**
  * Generator to create a statechart for Sismic library in Python
@@ -138,8 +138,10 @@ class SismicGenerator implements ISGraphGenerator {
 			  	«ENDIF»
 			  	«IF outgoingTransitions.size > 0»
 				    «FOR transition : outgoingTransitions»
-				      «transition.generate»
+				      «transition.generate(specificationState.transition)»
 				    «ENDFOR»
+				«ELSEIF specificationState.transition !== null»
+					«specificationState.transition.generate»
 			    «ENDIF»
 			'''
 		}
@@ -208,7 +210,9 @@ class SismicGenerator implements ISGraphGenerator {
 	/**
 	 * Generate Transition of a state
 	 */
-	def dispatch CharSequence generate(Transition it) {
+	def CharSequence generate(Transition it, be.ac.umons.bol.generator.sismic.specification.Transition transition) {
+		val spec = new SpecificationTransition(specification)
+		
 		if (target instanceof FinalState) {
 			target.name = target.parentRegion.name + "_final" + (listFinalState.length + 1)
 			listFinalState.add(target as FinalState)
@@ -216,31 +220,9 @@ class SismicGenerator implements ISGraphGenerator {
 		
 		return '''
 			- target: «target.name»
-			  «new SpecificationTransition(specification).generate»
+			  «spec.generate»
 		'''
 	}
-	
-	/**
-	 * Generate the data extracted in the specification of the outgoingTransition tag.
-	 */
-	def dispatch CharSequence generate(SpecificationTransition it) '''
-		«IF !event.empty»
-			event: «event»
-		«ENDIF»
-		«IF !guard.empty»
-			guard: «guard»
-		«ENDIF»
-		«IF listActions !== null && !listActions.empty»
-			«IF listActions.length == 1»
-				action: «listActions.get(0)»
-			«ELSE»
-				action: |
-					«FOR action : listActions»
-						«action»
-					«ENDFOR»
-			«ENDIF»
-		«ENDIF»
-	'''
 
 	def write(File dir, String filename, String content) {
 		dir.mkdirs

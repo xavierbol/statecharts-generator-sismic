@@ -4,16 +4,27 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SpecificationTransition {
+public class Specification {
     private String event = "";
     private String guard = "";
     private ArrayList<String> listActions;
 
-    public SpecificationTransition(String specification) {
+    public Specification(String specification) {
         if (!specification.isEmpty()) {
             listActions = new ArrayList<String>();
-            this.extractSpecifications(specification);
+            extractSpecifications(specification);
         }
+    }
+    
+    public Specification(String specification, String actions) {
+    	if (!specification.isEmpty()) {
+    		extractSpecifications(specification);
+    	}
+    	
+    	if (!actions.isEmpty()) {
+    		listActions = new ArrayList<String>();
+    		treatActions(actions);
+    	}
     }
 
     public String getEvent() {

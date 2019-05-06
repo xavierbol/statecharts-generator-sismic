@@ -79,4 +79,21 @@ public class TestSpecificationState {
             Assert.assertEquals(expectedTransition.getListActions().get(i), specificationState.getListOtherEvent().get(0).getListActions().get(i));
         }
     }
+    
+    @Test
+    public void testSpecificationStateMicrowave() {
+    	specification = "power_reset /\n" + 
+    			"	power = POWER_DEFAULT;\n" + 
+    			"	display_set(\"POWER: \", power)\n" + 
+    			"power_inc [power <= 1200] /\n" + 
+    			"	power = power + 300;\n" + 
+    			"	display_set(\"POWER: \", power)\n" + 
+    			"power_dec [power >= 0] /\n" + 
+    			"	power = power - 300;\n" + 
+    			"	display_set(\"POWER: \", power)";
+    	
+    	specificationState = new SpecificationState("program mode", specification);
+    	
+    	
+    }
 }
