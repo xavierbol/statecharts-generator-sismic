@@ -6,6 +6,10 @@ class SpecificationTransition extends Specification {
 		super(specification)
 	}
 	
+	def mergeSpecification(SpecificationTransition specification) {
+		this.listActions.addAll(specification.listActions)
+	}
+	
 	/**
 	 * Generate the data extracted in the specification of the outgoingTransition tag.
 	 */

@@ -1,7 +1,5 @@
 package be.ac.umons.bol.generator.sismic.specification;
 
-import java.util.ArrayList;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,6 +62,7 @@ public class TestSpecificationState {
         Assert.assertEquals(expectedActionsInEntryEvent.length, specificationState.getListEntryEvent().size());
         Assert.assertEquals(expectedActionsInExitEvent.length, specificationState.getListExitEvent().size());
         Assert.assertEquals(1, specificationState.getListOtherEvent().size());
+        Assert.assertEquals(null, specificationState.getEveryEvent());
         
         for (int i = 0; i < expectedActionsInEntryEvent.length; i++) {
             Assert.assertEquals(expectedActionsInEntryEvent[i], specificationState.getListEntryEvent().get(i));
@@ -73,10 +72,11 @@ public class TestSpecificationState {
             Assert.assertEquals(expectedActionsInExitEvent[i], specificationState.getListExitEvent().get(i));
         }
         
-        Assert.assertEquals(expectedTransition.getEvent(), specificationState.getListOtherEvent().get(0).getEvent());
-        Assert.assertEquals(expectedTransition.getListActions().size(), specificationState.getListOtherEvent().get(0).getListActions().size());
-        for (int i = 0; i < expectedTransition.getListActions().size(); i++) {
-            Assert.assertEquals(expectedTransition.getListActions().get(i), specificationState.getListOtherEvent().get(0).getListActions().get(i));
+        Assert.assertEquals(expectedTransition.getSpecification().getEvent(), specificationState.getListOtherEvent().get(0).getSpecification().getEvent());
+        System.out.println(specificationState.getListOtherEvent().get(0).getSpecification().getListActions().get(0));
+        Assert.assertEquals(expectedTransition.getSpecification().getListActions().size(), specificationState.getListOtherEvent().get(0).getSpecification().getListActions().size());
+        for (int i = 0; i < expectedTransition.getSpecification().getListActions().size(); i++) {
+            Assert.assertEquals(expectedTransition.getSpecification().getListActions().get(i), specificationState.getListOtherEvent().get(0).getSpecification().getListActions().get(i));
         }
     }
     

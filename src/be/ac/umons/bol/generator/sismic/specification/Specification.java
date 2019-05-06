@@ -8,7 +8,7 @@ public class Specification {
     private String event = "";
     private String guard = "";
     private ArrayList<String> listActions;
-
+    
     public Specification(String specification) {
         if (!specification.isEmpty()) {
             listActions = new ArrayList<String>();
@@ -46,6 +46,22 @@ public class Specification {
     public ArrayList<String> getListActions() {
         return listActions;
     }
+    
+    public boolean haveSameTrigger(Specification specification) {
+        if (specification == null) {
+            return false;
+        }
+        
+        return event.equals(specification.getEvent()) && guard.equals(specification.getGuard());
+    }
+    
+    public void addAction(String action) {
+        if (listActions == null) {
+            listActions = new ArrayList<String>();
+        }
+        
+        treatActions(action);
+    }
 
     private void extractSpecifications(String specification) {
         String txt = specification.replaceAll("\\n", " ");
@@ -55,7 +71,7 @@ public class Specification {
 
         if (indexA != -1) { // if there is an action
             String[] transitionWithAction = txt.split("/");
-            treatActions(transitionWithAction[1].trim());
+            treatActions(transitionWithAction[1]);
             txt = transitionWithAction[0].trim();
         }
 
@@ -97,7 +113,7 @@ public class Specification {
                 listActions.add(a.trim());
             }
         } else {
-            listActions.add(action);
+            listActions.add(action.trim());
         }
     }
 
@@ -111,32 +127,29 @@ public class Specification {
     }
 
     private void treatEvent() {
-        String regex = "after (\\d+)(ms|s|m|h)";
+        String regex = "after (\\d+)\\s*(ms|s|m|h)";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(event);
 
         if (m.find()) { // if it's a temporal event with keyword after... then it must to change into after(...)
-            System.out.println("Expression complète trouvée : " + m.group(0));
             String eventTime = m.group(0);
-            System.out.println("group 1 trouvé : " + m.group(1));
             float value = Float.valueOf(m.group(1));
-            System.out.println("group 2 trouvé : " + m.group(2));
             String timeUnit = m.group(2);
 
             switch (timeUnit) {
                 case "ms":
-                    value /= 1000;
+                    value /= 1e3;
                     break;
                 case "us":
-                    value *= 10^6;
+                    value /= 1e6;
                     break;
                 case "ns":
-                    value *= 10^9;
+                    value /= 1e9;
                     break;
             }
 
             event = event.replaceAll(eventTime, "").trim();
-            String newGuard = "after(" + value + ")";
+            String newGuard = "after(" + String.valueOf(value) + ")";
             if (guard.length() == 0) {
                 guard = newGuard;
             } else {

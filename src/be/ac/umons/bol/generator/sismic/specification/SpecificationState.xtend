@@ -66,22 +66,30 @@ class SpecificationState {
 	 */
 	private def defineEvent(String event) {
 		if (event.equals("entry")) {
+			if (event.contains("[")) {
+				throw new Exception("Error, sismic doesn't support guard into entry event")
+			}
+			
 			if (listEntryEvent === null) {
 				listEntryEvent = new ArrayList
 			}
 			return Event.ENTRY
 		}
 		
-		if (event.equals("exit")) {
+		if (event.contains("exit")) {
+			if (event.contains("[")) {
+				throw new Exception("Error, sismic doesn't support guard into exit event")
+			}
+			
 			if (listExitEvent === null) {
 				listExitEvent = new ArrayList
 			}
 			return Event.EXIT
 		}
 		
-		if (event.equals("always")) {
+		if (event.contains("always")) {
 			if (transition === null) {
-				transition = new Transition(nameState)
+				transition = new Transition(nameState, event.replaceAll("always", ""))
 			}
 			return Event.ALWAYS
 		}
@@ -91,9 +99,9 @@ class SpecificationState {
 			return Event.EVERY
 		}
 		
-		if (event.equals("oncycle")) {
+		if (event.contains("oncycle")) {
 			if (transition === null) {
-				transition = new Transition(nameState)
+				transition = new Transition(nameState, event.replaceAll("oncycle", ""))
 			}
 			return Event.ONCYCLE
 		}
@@ -115,36 +123,27 @@ class SpecificationState {
 	}
 	
 	private def manageActions(String event, String action) {
-		val a = treatActions(action)
-		
-		var transition = searchTransition(event)
+		val specification = new SpecificationTransition(event)
+		var transition = searchTransition(specification)
 		
 		if (transition === null) {
-			transition = new Transition(nameState, event)
+			transition = new Transition(nameState, specification, action)
+			
+			if (listOtherEvent === null) {
+	        	listOtherEvent = new ArrayList
+	        }
+	        
+	        listOtherEvent.add(transition)
+		} else {
+			transition.addAction(action)
 		}
-		
-		if (action.contains(";")) {
-            val tabActions = a.split(";")
-
-            for (elem : tabActions) {
-                transition.addAction(elem.trim())
-            }
-        } else {
-            transition.addAction(a)
-        }
-        
-        if (listOtherEvent === null) {
-        	listOtherEvent = new ArrayList
-        }
-        
-        listOtherEvent.add(transition)
 	}
 	
-	private def searchTransition(String event) {
+	private def searchTransition(Specification specification) {
 		if (listOtherEvent !== null) {
 			for (var i = 0; i < listOtherEvent.size(); i++) {
-				if (listOtherEvent.get(i).getEvent().equals(event)) {
-					return listOtherEvent.remove(i)
+				if (listOtherEvent.get(i).specification.haveSameTrigger(specification)) {
+					return listOtherEvent.get(i)
 				}
 			}
 		}

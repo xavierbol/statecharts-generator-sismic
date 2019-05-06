@@ -218,6 +218,10 @@ class SismicGenerator implements ISGraphGenerator {
 			listFinalState.add(target as FinalState)
 		}
 		
+		if (transition !== null && spec.haveSameTrigger(transition.specification)) { // Then add all actions into this current transition
+			spec.mergeSpecification(transition.specification)
+		}
+		
 		return '''
 			- target: «target.name»
 			  «spec.generate»
