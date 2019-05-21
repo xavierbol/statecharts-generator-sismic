@@ -16,7 +16,6 @@ class EveryEvent {
 	new(String name, float time) {
 		this.time = time
 		nameState = name + EVERY
-		var char c = 'c'
 	}
 	
 	new(String name, float time, ArrayList<String> actions) {
