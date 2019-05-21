@@ -56,9 +56,9 @@ Feature: Dishwascher
         When I wait 2 seconds
         Then state Rincage is exited
         And state Active is active
-        And state Séchage is entered
+        And state Sechage is entered
         When I wait 5 seconds
-        Then state Séchage is exited
+        Then state Sechage is exited
         And variable finish equals True
         And state Active is exited
         And state Stopped is entered

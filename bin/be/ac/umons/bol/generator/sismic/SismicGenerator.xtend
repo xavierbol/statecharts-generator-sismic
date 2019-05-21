@@ -10,19 +10,19 @@ import org.yakindu.sct.model.sgraph.Region
 import org.yakindu.sct.model.sgraph.Entry
 import org.yakindu.sct.model.sgraph.State
 import org.yakindu.sct.model.sgraph.Transition
-import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 import be.ac.umons.bol.generator.sismic.specification.SpecificationState
 import java.util.ArrayList
 import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot
 import org.yakindu.sct.model.sgraph.FinalState
+import org.yakindu.sct.model.sgraph.EntryKind
+import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
 
 /**
  * Generator to create a statechart for Sismic library in Python
  * Sismic library use YAML file to define a statechart.
  * 
  * TODO:
- *  - Gérer les évènements always, oncycle et every
- * 	- Gérer les états historiques
+ *  - Vérifier la gestion des évènements always et oncycle
  * 	- Gérer plusieurs interfaces créées dans un même statechart
  */
 class SismicGenerator implements ISGraphGenerator {
@@ -75,6 +75,27 @@ class SismicGenerator implements ISGraphGenerator {
 	}
 	
 	/**
+	 * Search a history State in the current region
+	 * 
+	 * region : the current region
+	 * 
+	 * return the entry that is a history state or null if there is no history state
+	 */
+	def private Entry historyState(Region region) {
+		val entry = region.vertices.filter(Entry)
+		
+		if (entry !== null) {
+			for (e : entry) {
+				if (e.kind !== EntryKind.INITIAL) {
+					return e
+				}
+			}			
+		}
+		
+		return null
+	}
+	
+	/**
 	 * Generate an region
 	 * This region can be :
 	 * 	- The first region of the statechart
@@ -82,7 +103,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * 
 	 * if it's the first region, it will add name and initial keyword in YAML file
 	 */
-	def dispatch CharSequence generate(Region it) '''
+	def dispatch String generate(Region it) '''
 		«IF vertices.filter(Entry).head !== null»
 			initial: «initialState»
 	  	«ENDIF»
@@ -93,23 +114,44 @@ class SismicGenerator implements ISGraphGenerator {
 			«FOR finalState : listFinalState»
 				«finalState.generate»
 			«ENDFOR»
+			«IF historyState !== null»
+				«historyState.generate»
+			«ENDIF»«listFinalState.clear»
 	'''
 	
 	/**
 	 * Generate State of the statechart
 	 * In Yakindu, a state is a Vertex with a type State
 	 */
-	def dispatch CharSequence generate(State it) {
+	def dispatch String generate(State it) {
 		val specificationState = new SpecificationState(name, specification)
+		
+		val exist_transitions = outgoingTransitions.size > 0 || (specificationState.listOtherEvent !== null && !specificationState.listOtherEvent.isEmpty)
+		var transitions = ""
+		
+		if (exist_transitions) {
+			transitions = '''
+				«IF specificationState.listOtherEvent !== null && !specificationState.listOtherEvent.isEmpty»
+				  	«FOR transition : specificationState.listOtherEvent»
+				  		«transition.generate»
+					«ENDFOR»
+			  	«ENDIF»
+			  	«IF outgoingTransitions.size > 0»
+				    «FOR transition : outgoingTransitions»
+				      «transition.generate(specificationState.transition)»
+				    «ENDFOR»
+				«ELSEIF specificationState.transition !== null»
+					«specificationState.transition.generate»
+			    «ENDIF»
+			'''
+		}
 		
 		return '''
 			- name: «name»
 			  «specificationState.generate»
-			  «IF outgoingTransitions.size > 0»
+			  «IF exist_transitions»
 			  transitions:
-			    «FOR transition : outgoingTransitions»
-			      «transition.generate»
-			    «ENDFOR»
+			  	«transitions»
 			  «ENDIF»
 			  «IF isOrthogonal»
 			  	parallel states:
@@ -133,44 +175,58 @@ class SismicGenerator implements ISGraphGenerator {
 		'''
 	}
 	
-	def dispatch CharSequence generate(FinalState it) '''
-		- state: «name»
+	/**
+	 * Generate the final states
+	 * Normally this final states are detected in outgoingTransition of the others states
+	 */
+	def dispatch String generate(FinalState it) '''
+		- name: «name»
 		  type: final
 	'''
 	
 	/**
+	 * Generate the history states
+	 * Yakindu define the history as an initial state with an attribute kind
+	 * to find the enumeration of this state
+	 * A history state has as value in kind attribute :
+	 * 	- EntryKind.DEEP_HISTORY
+	 * 	- EntryKind.SHALLOW_HISTORY
+	 */
+	def dispatch String generate(Entry it) {
+		var history = ""
+		
+		if (kind == EntryKind.DEEP_HISTORY) {
+			history = "deep history"
+		} else if (kind == EntryKind.SHALLOW_HISTORY) {
+			history = "shallow history"
+		}
+		
+		return '''
+			- name: «name»
+			  type: «history»
+		'''
+	}
+	
+	/**
 	 * Generate Transition of a state
 	 */
-	def dispatch CharSequence generate(Transition it) {
-		if (target instanceof FinalState) {
-			target.name = target.parentRegion.name + "_f" + (listFinalState.length + 1)
+	def CharSequence generate(Transition it, be.ac.umons.bol.generator.sismic.specification.Transition transition) {
+		val spec = new SpecificationTransition(specification)
+		
+		if (target instanceof FinalState) { // It must check if the final already exists in this list
+			target.name = target.parentRegion.name + "_final" + (listFinalState.length + 1)
 			listFinalState.add(target as FinalState)
+		}
+		
+		if (transition !== null && spec.haveSameTrigger(transition.specification)) { // Then add all actions into this current transition
+			spec.mergeSpecification(transition.specification)
 		}
 		
 		return '''
 			- target: «target.name»
-			  «new SpecificationTransition(specification).generate»
+			  «spec.generate»
 		'''
 	}
-	
-	def dispatch CharSequence generate(SpecificationTransition it) '''
-		«IF !event.empty»
-			event: «event»
-		«ENDIF»
-		«IF !guard.empty»
-			guard: «guard»
-		«ENDIF»
-		«IF !listActions.empty»
-			«IF listActions.length == 1»
-				action: «listActions.get(0)»
-			«ELSE»
-				action: |
-					«FOR action : listActions»
-						«action»
-					«ENDFOR»
-			«ENDIF»
-		«ENDIF»
-	'''
 
 	def write(File dir, String filename, String content) {
 		dir.mkdirs

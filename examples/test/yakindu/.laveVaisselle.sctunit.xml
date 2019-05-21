@@ -1,0 +1,12 @@
+<testsuite name="Dishwascher" time="">
+  <testcase name="testInitialisation" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/laveVaisselle.sctunit#Dishwascher.testInitialisation" time="">
+  </testcase>
+  <testcase name="testDishwasherEntersActiveState" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/laveVaisselle.sctunit#Dishwascher.testDishwasherEntersActiveState" time="">
+  </testcase>
+  <testcase name="testRincageAndOpenDoor" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/laveVaisselle.sctunit#Dishwascher.testRincageAndOpenDoor" time="">
+  </testcase>
+  <testcase name="testHistoryState" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/laveVaisselle.sctunit#Dishwascher.testHistoryState" time="">
+  </testcase>
+  <testcase name="DishwasherFinishesProcess" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/laveVaisselle.sctunit#Dishwascher.DishwasherFinishesProcess" time="">
+  </testcase>
+</testsuite>

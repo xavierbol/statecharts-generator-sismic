@@ -1,0 +1,78 @@
+testclass Dishwascher for statechart laveVaisselle {
+	
+	@Test
+	operation testInitialisation() {
+		enter
+		assert(finish == false)
+		assert(active(main_region.Stopped))
+		exit
+	}
+	
+	/**
+	 * Test that the dishwasher enters to the Active state
+	 */
+	@Test
+	operation testDishwasherEntersActiveState() {
+		enter
+		assert(active(main_region.Stopped))
+		raise on
+		proceed 1 cycle
+		assert(active(main_region.Active))
+		assert(active(main_region.Active.r1.Lavage))
+		exit
+	}
+	
+	@Test
+	operation testRincageAndOpenDoor() {
+		enter
+		assert(active(main_region.Stopped))
+		raise on
+		proceed 1 cycle
+		assert(active(main_region.Active))
+		assert(active(main_region.Active.r1.Lavage))
+		proceed 5s
+		assert(active(main_region.Active.r1.Rincage))
+		raise porteOuverte
+		proceed 1 cycle
+		assert(active(main_region.Attente))
+		exit
+	}
+	
+	@Test
+	operation testHistoryState() {
+		enter
+		assert(active(main_region.Stopped))
+		raise on
+		proceed 1 cycle
+		assert(active(main_region.Active))
+		assert(active(main_region.Active.r1.Lavage))
+		proceed 5s
+		assert(active(main_region.Active.r1.Rincage))
+		raise porteOuverte
+		proceed 1 cycle
+		assert(active(main_region.Attente))
+		raise porteFermee
+		proceed 1 cycle
+		assert(active(main_region.Active.r1.Rincage))
+		exit
+	}
+	
+	@Test
+	operation DishwasherFinishesProcess() {
+		enter
+		assert(active(main_region.Stopped))
+		raise on
+		proceed 1 cycle
+		assert(active(main_region.Active))
+		assert(active(main_region.Active.r1.Lavage))
+		proceed 5s
+		assert(active(main_region.Active.r1.Rincage))
+		proceed 2s
+		assert(active(main_region.Active.r1.Sechage))
+		proceed 5s
+		proceed 1 cycle
+		assert(active(main_region.Stopped))
+		assert(finish == true)
+		exit
+	}
+}

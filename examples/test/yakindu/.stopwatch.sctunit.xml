@@ -1,0 +1,8 @@
+<testsuite name="stopwatch" time="">
+  <testcase name="testInitialisation" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/stopwatch.sctunit#stopwatch.testInitialisation" time="">
+  </testcase>
+  <testcase name="testIncreaseElapsedTime" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/stopwatch.sctunit#stopwatch.testIncreaseElapsedTime" time="">
+  </testcase>
+  <testcase name="testResetStopwatch" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/stopwatch.sctunit#stopwatch.testResetStopwatch" time="">
+  </testcase>
+</testsuite>

@@ -9,23 +9,24 @@ import java.util.ArrayList
  */
 class EveryEvent {
 	static String EVERY = "_every"
-	@Accessors float time;
+	@Accessors float time
 	@Accessors String nameState
 	@Accessors ArrayList<String> actions
 	
 	new(String name, float time) {
 		this.time = time
 		nameState = name + EVERY
+		var char c = 'c'
 	}
 	
 	new(String name, float time, ArrayList<String> actions) {
-		this(name, time);
+		this(name, time)
 		this.actions = actions
 	}
 	
 	def addAction(String action) {
 		if (actions === null) actions = new ArrayList
-		actions.add(action)	
+		actions.add(action)			
 	}
 	
 	def generate() '''

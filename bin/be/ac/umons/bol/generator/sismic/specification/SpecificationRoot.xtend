@@ -16,8 +16,8 @@ import be.ac.umons.bol.generator.sismic.Utils
  */
 class SpecificationRoot {
 	static val REGEX_INTERFACE = ""
-	static val REGEX_OPERATION = "operation\\s+(.*)\\(((.*)\\s*:\\s*(.*))?\\)\\s*:\\s*(\\w*)"
-	static val REGEX_VARIABLE = "var\\s+(.*):\\s*(\\w+)(\\s*=\\s*(.*))?"
+	static val REGEX_OPERATION = "operation\\s+(.*)\\(((.*)\\s*:\\s*(.*))?\\)\\s*(:\\s*(\\w*))?"
+	static val REGEX_VARIABLE = "(var|const)\\s+(.*):\\s*(\\w+)(\\s*=\\s*(.*))?"
 	
 	@Accessors ArrayList<String> context;
 	@Accessors String nameInterface;
@@ -41,7 +41,7 @@ class SpecificationRoot {
 		if (m.find()) {
 			val name = m.group(1)			
 			val parameters = m.group(2)
-			val typeReturn = m.group(5)
+			val typeReturn = m.group(6)
 			
 			var StringBuilder funcPython = new StringBuilder("def " + name + "(")
 			
@@ -62,7 +62,9 @@ class SpecificationRoot {
 				}
 			}
 			
-			funcPython.append(") -> " + Utils.translateTypeInPythonType(typeReturn) + ":") 
+			
+			funcPython.append(") -> " + Utils.translateTypeInPythonType(typeReturn) + ":")
+			
 			
 			if (operations === null) {
 				operations = new ArrayList
@@ -79,10 +81,10 @@ class SpecificationRoot {
 			
 			if (m.find()) {
 				val StringBuilder varPython = new StringBuilder(50)
-				varPython.append(m.group(1) + " = ")
-				val type = m.group(2)
+				varPython.append(m.group(2) + " = ")
+				val type = m.group(3)
 				
-				if (m.group(4) === null) {
+				if (m.group(5) === null) {
 					if (type.equals("integer")) {
 						varPython.append("0");
 					} else if (type.equals("float") || type.equals("real")) {
@@ -93,7 +95,7 @@ class SpecificationRoot {
 						varPython.append("False")
 					}
 				} else {
-					var value = m.group(4)
+					var value = m.group(5)
 					
 					if (type.equals("boolean")) {
 						if (value.contains("true")) {
@@ -101,6 +103,10 @@ class SpecificationRoot {
 						} else {
 							value = value.replaceAll("false", "False"); // replace false by False
 						}
+					}
+					
+					if (value.contains('//')) {
+						value = value.replaceAll("//", "#");
 					}
 					
 					varPython.append(value)

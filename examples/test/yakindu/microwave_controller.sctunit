@@ -1,0 +1,42 @@
+testclass microwave_controller for statechart microwave_controller {
+	
+	@Test
+	operation testInitialisation() {
+		enter
+		assert(active(microwave.controller))
+		assert(active(microwave.controller.r_controller.door_closed))
+		assert(active(microwave.controller.r_controller.door_closed.r_door_closed.closed_without_item))
+		assert(power == POWER_DEFAULT)
+		assert(timer == 0)
+		exit
+	}
+	
+	@Test
+	operation testNoHeatingWhenDoorIsNotClosed() {
+		enter
+		raise door_opened
+		raise item_placed
+		raise timer_inc
+		raise cooking_start
+		assert(!active(microwave.controller.r_controller.door_closed.r_door_closed.closed_with_item.r1.cooking_mode))
+		exit
+	}
+	
+	@Test
+	operation testIncreaseTimer() {
+		enter
+		raise door_opened
+		raise item_placed
+		raise door_closed
+		
+		var i:integer = 0
+		
+		while (i < 10) {
+			raise timer_inc
+			i += 1
+		}
+		
+		assert(timer == 10)
+		exit
+	}
+}

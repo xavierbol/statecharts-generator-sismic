@@ -1,0 +1,8 @@
+<testsuite name="microwave_controller" time="">
+  <testcase name="testInitialisation" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/microwave_controller.sctunit#microwave_controller.testInitialisation" time="">
+  </testcase>
+  <testcase name="testNoHeatingWhenDoorIsNotClosed" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/microwave_controller.sctunit#microwave_controller.testNoHeatingWhenDoorIsNotClosed" time="">
+  </testcase>
+  <testcase name="testIncreaseTimer" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/microwave_controller.sctunit#microwave_controller.testIncreaseTimer" time="">
+  </testcase>
+</testsuite>

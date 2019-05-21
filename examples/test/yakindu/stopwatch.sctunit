@@ -1,0 +1,54 @@
+testclass stopwatch for statechart stopwatch {
+	
+	/**
+	 * Initial test
+	 * Same test that the first scenario in stopwatch.feature file
+	 */
+	@Test
+	operation testInitialisation() {
+		enter
+		assert(active(main_region.^active))
+		assert(active(main_region.^active.timer.stopped))
+		assert(active(main_region.^active.display.actual_time))
+		assert(elapsed_time == 0)
+		exit
+	}
+	
+	/**
+	 * Test the elapse_time increase correctly
+	 * Same test that the second scenario in stopwatch.feature file 
+	 */
+	@Test
+	operation testIncreaseElapsedTime() {
+		enter
+		assert(elapsed_time == 0)
+		raise start
+		proceed 1 cycle
+		proceed 1s
+		assert(elapsed_time == 1)
+		exit
+	}
+	
+	/**
+	 * Test when we reset the stopwatch
+	 * Same test that the last scenario in stopwatch.feature file
+	 */
+	@Test
+	operation testResetStopwatch() {
+		enter
+		raise start
+		proceed 1 cycle
+		proceed 1s
+		assert(elapsed_time == 1)
+		proceed 1s
+		assert(elapsed_time == 2)
+		raise stop
+		proceed 1 cycle
+		assert(active(main_region.^active.timer.stopped))
+		assert(active(main_region.^active.display.actual_time))
+		raise reset
+		proceed 1 cycle
+		assert(elapsed_time == 0)
+		exit
+	}
+}

@@ -1,0 +1,10 @@
+<testsuite name="CruiseControl" time="">
+  <testcase name="testInitialisation" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/CruiseControl.sctunit#CruiseControl.testInitialisation" time="">
+  </testcase>
+  <testcase name="testAccelerationCarAndActivateCruiseControl" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/CruiseControl.sctunit#CruiseControl.testAccelerationCarAndActivateCruiseControl" time="">
+  </testcase>
+  <testcase name="testCruiseModifySpeed" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/CruiseControl.sctunit#CruiseControl.testCruiseModifySpeed" time="">
+  </testcase>
+  <testcase name="testCruiseControlDecreaseSpeedToMemSpeed" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/CruiseControl.sctunit#CruiseControl.testCruiseControlDecreaseSpeedToMemSpeed" time="">
+  </testcase>
+</testsuite>

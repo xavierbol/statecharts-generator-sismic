@@ -11,10 +11,11 @@ class Utils {
 				return "float"
 			case "string":
 				return "str"
-			case "void":
+			case "void",
+			case null:
 				return "None"
 			default:
-				throw new Exception("Error, le type " + type + " n'existe pas en Yakindu, impossible de le traduire en Python")
+				throw new Exception("Error, this type : " + type + " doesn't exist in Yakindu, impossible to translate for Sismic library...")
 		}
 	}	
 }

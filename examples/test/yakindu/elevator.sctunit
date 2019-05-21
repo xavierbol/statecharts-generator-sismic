@@ -1,0 +1,61 @@
+testclass elevator for statechart ElevatorSismic {
+	
+	@Test
+	operation testInitialisation() {
+		enter
+		assert(active(movingElevator.DoorsOpen))
+		assert(active(floorListener.FloorSelecting))
+		assert(current == 0)
+		assert(destination == 0)
+		exit
+	}
+	
+	/**
+	 * Test if the elevator can move to 7th floor 
+	 */
+	@Test
+	operation testElevatorUp() {
+		enter
+		raise floorSelected:7
+		var i:integer = 0
+		proceed 2 cycle
+		assert(active(movingElevator.DoorsClosed))
+		
+		proceed 1 cycle
+		while (i < destination) {
+			i = i + 1
+			assert(active(movingElevator.Moving.r1.MovingUp))
+			assert(current == i)
+			proceed 1 cycle
+		}
+		assert(current == destination)
+		exit
+	}
+	
+	@Test
+	operation testElevatorReachesGroundFloor() {
+		enter
+		raise floorSelected:7
+		while (!active(movingElevator.Moving.r1.MovingUp)) {
+			proceed 1 cycle
+		}
+		
+		var i:integer = 0
+		while (i < destination) {
+			i = i + 1
+			assert(active(movingElevator.Moving.r1.MovingUp))
+			assert(current == i)
+			proceed 1 cycle
+		}
+		assert(current == destination)
+		assert(active(movingElevator.DoorsOpen))
+		
+		proceed 10s
+		assert(active(movingElevator.DoorsClosed))
+		while(current != destination) {
+			proceed 1 cycle
+		}
+		assert(current == 0)
+		exit
+	}
+}

@@ -11,7 +11,7 @@ import java.util.ArrayList
  * 	- Est il mieux de définir une classe et mettant les variables et les opérations dans le fichier python au lieu de définir les variables
  * dans le preamble du fichier yaml et définir les functions dans le fichier python.
  */
-class SismicInterpreter {
+abstract class SismicInterpreter {
 	static def content(Statechart sc, SpecificationRoot specificationRoot) '''
 		from sismic.io import import_from_yaml
 		from sismic.interpreter import Interpreter

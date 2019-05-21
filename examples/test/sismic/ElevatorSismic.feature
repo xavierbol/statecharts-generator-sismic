@@ -2,7 +2,9 @@ Feature: Elevator
 
   Scenario: Elevator starts on ground floor
     When I do nothing
-    Then variable current equals 0
+    Then state DoorsOpen is active
+    And state FloorSelecting is active
+    And variable current equals 0
     And variable destination equals 0
 
   Scenario: Elevator can move to 7th floor
@@ -13,7 +15,6 @@ Feature: Elevator
     When I send event floorSelected
       | parameter     | value |
       | floorSelected | 4     |
-      | dummy         | None  |
     Then variable current equals 4
 
   Scenario: Elevator reaches ground floor after 10 seconds

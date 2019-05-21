@@ -1,0 +1,8 @@
+<testsuite name="elevator" time="">
+  <testcase name="testInitialisation" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/elevator.sctunit#elevator.testInitialisation" time="">
+  </testcase>
+  <testcase name="testElevatorUp" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/elevator.sctunit#elevator.testElevatorUp" time="">
+  </testcase>
+  <testcase name="testElevatorReachesGroundFloor" classname="platform:/resource/statecharts-generator-sismic/examples/test/yakindu/elevator.sctunit#elevator.testElevatorReachesGroundFloor" time="">
+  </testcase>
+</testsuite>

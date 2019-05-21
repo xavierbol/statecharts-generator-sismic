@@ -11,15 +11,13 @@ import java.util.ArrayList
  * 	- Est il mieux de définir une classe et mettant les variables et les opérations dans le fichier python au lieu de définir les variables
  * dans le preamble du fichier yaml et définir les functions dans le fichier python.
  */
-class SismicInterpreter {
-	static public def content(Statechart sc, SpecificationRoot specificationRoot) '''
+abstract class SismicInterpreter {
+	static def content(Statechart sc, SpecificationRoot specificationRoot) '''
 		from sismic.io import import_from_yaml
 		from sismic.interpreter import Interpreter
+		from sismic.model import MacroStep
 		
-		# Load statechart from yaml file
-		«sc.name» = import_from_yaml(filepath='«sc.name».yaml')
-		
-		«IF specificationRoot != null && specificationRoot.operations != null && !specificationRoot.operations.empty»
+		«IF specificationRoot !== null && specificationRoot.operations !== null && !specificationRoot.operations.empty»
 			«FOR operation : specificationRoot.operations»
 				«operation»
 					...
@@ -31,17 +29,39 @@ class SismicInterpreter {
 			context = {}
 		«ENDIF»
 		
-		# Create an interpreter for this statechart
-		interpreter = Interpreter(elevator, initial_context=context)
+		def set_up() -> Interpreter:
+		    # Load statechart from yaml file
+		    «sc.name» = import_from_yaml(filepath='«sc.name».yaml')
 		
-		print('Before:', interpreter.configuration)
+		    context = {"elapsed_time": 0}
 		
-		step = interpreter.execute_once()
+		    # Create an interpreter for this statechart
+		    return Interpreter(«sc.name», initial_context=context)
 		
-		print('After:', interpreter.configuration)
 		
-		for attribute in ['event', 'transitions', 'entered_states', 'exited_states', 'sent_events']:
-		    print('{}: {}'.format(attribute, getattr(step, attribute)))
+		def display_attributes(step: MacroStep) -> None:
+		    for attribute in [
+		        "event",
+		        "transitions",
+		        "entered_states",
+		        "exited_states",
+		        "sent_events",
+		    ]:
+		        print("{}: {}".format(attribute, getattr(step, attribute)))
+		
+		
+		def next_step(interpreter: Interpreter) -> MacroStep:
+		    print("Before:", interpreter.configuration)
+		
+		    step = interpreter.execute_once()
+		
+		    print("After:", interpreter.configuration)
+		    return step
+		
+		if __name__ == "__main__":
+		    interpreter = set_up()
+		    step = next_step(interpreter)
+		    display_attributes(step)
 	'''
 	
 	static private def makeContext(ArrayList<String> context) '''

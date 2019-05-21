@@ -103,7 +103,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * 
 	 * if it's the first region, it will add name and initial keyword in YAML file
 	 */
-	def dispatch CharSequence generate(Region it) '''
+	def dispatch String generate(Region it) '''
 		«IF vertices.filter(Entry).head !== null»
 			initial: «initialState»
 	  	«ENDIF»
@@ -123,7 +123,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * Generate State of the statechart
 	 * In Yakindu, a state is a Vertex with a type State
 	 */
-	def dispatch CharSequence generate(State it) {
+	def dispatch String generate(State it) {
 		val specificationState = new SpecificationState(name, specification)
 		
 		val exist_transitions = outgoingTransitions.size > 0 || (specificationState.listOtherEvent !== null && !specificationState.listOtherEvent.isEmpty)
@@ -179,7 +179,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * Generate the final states
 	 * Normally this final states are detected in outgoingTransition of the others states
 	 */
-	def dispatch CharSequence generate(FinalState it) '''
+	def dispatch String generate(FinalState it) '''
 		- name: «name»
 		  type: final
 	'''
@@ -192,7 +192,7 @@ class SismicGenerator implements ISGraphGenerator {
 	 * 	- EntryKind.DEEP_HISTORY
 	 * 	- EntryKind.SHALLOW_HISTORY
 	 */
-	def dispatch CharSequence generate(Entry it) {
+	def dispatch String generate(Entry it) {
 		var history = ""
 		
 		if (kind == EntryKind.DEEP_HISTORY) {
@@ -213,7 +213,7 @@ class SismicGenerator implements ISGraphGenerator {
 	def CharSequence generate(Transition it, be.ac.umons.bol.generator.sismic.specification.Transition transition) {
 		val spec = new SpecificationTransition(specification)
 		
-		if (target instanceof FinalState) {
+		if (target instanceof FinalState) { // It must check if the final already exists in this list
 			target.name = target.parentRegion.name + "_final" + (listFinalState.length + 1)
 			listFinalState.add(target as FinalState)
 		}

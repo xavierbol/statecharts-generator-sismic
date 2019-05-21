@@ -16,6 +16,7 @@ class EveryEvent {
 	new(String name, float time) {
 		this.time = time
 		nameState = name + EVERY
+		var char c = 'c'
 	}
 	
 	new(String name, float time, ArrayList<String> actions) {
@@ -25,7 +26,7 @@ class EveryEvent {
 	
 	def addAction(String action) {
 		if (actions === null) actions = new ArrayList
-		actions.add(action)	
+		actions.add(action)			
 	}
 	
 	def generate() '''

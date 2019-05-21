@@ -1,0 +1,118 @@
+testclass CruiseControl for statechart CruiseControl {
+	/**
+	 * Test at initialisation to the statechart, it's the same test
+	 * that scenario 1 of CruiseControl.feature for Sismic statechart
+	 */
+	@Test
+	operation testInitialisation() {
+		enter
+		assert(active(CruiseControl.CC_Off))
+		assert(active(Car.Off))
+		assert(speed == 0)
+		assert(memSpeed == 0)
+		exit
+	}
+	
+	/**
+	 * Test when car accelerate and we can activate the cruise control
+	 * Scenario 2 of CruiseControl.feature
+	 */
+	 @Test
+	 operation testAccelerationCarAndActivateCruiseControl() {
+	 	enter
+	 	raise turnKey
+	 	proceed 1 cycle
+	 	assert(active(Car.On.r1.Driving))
+	 	assert(active(CruiseControl.CC_Off))
+	 	
+	 	raise accelerate
+	 	proceed 1 cycle
+	 	assert(active(Car.On))
+	 	assert(active(Car.On.r1.Accelerating))
+	 	
+		proceed 100ms
+		proceed 40 cycle
+		
+	 	raise accelerate
+	 	proceed 1 cycle
+	 	assert(speed == 40)
+	 	assert(active(Car.On.r1.Driving))
+	 	
+	 	raise on_off
+	 	proceed 1 cycle
+	 	assert(active(CruiseControl.CC_On))
+	 	exit
+	 }
+	 
+	 operation cruiseControlIncreaseSpeed() {
+		speed = 40
+	 	raise turnKey
+	 	proceed 1 cycle
+	 	
+	 	raise on_off
+	 	proceed 1 cycle
+	 	assert(active(Car.On.r1.Driving))
+	 	assert(active(CruiseControl.CC_On))
+	 	
+	 	raise set
+	 	proceed 1 cycle
+	 	assert(active(CruiseControl.CC_On.r1.Active))
+	 	
+	 	raise set
+	 	proceed 1 cycle
+	 	assert(active(CruiseControl.CC_On.r1.SetSpeed))
+	 	
+	 	proceed 2 cycle
+	 	assert(active(CruiseControl.CC_On.r1.Active))
+	 	assert(memSpeed == 41)
+	 	assert(speed == 41)
+	}
+	 
+	 /**
+	  * Test if the cruise control modify correctly the speed of car
+	  * Scenario 3 of CruiseControl.feature
+	  */
+	 @Test
+	 operation testCruiseModifySpeed() {
+	 	enter
+	 	cruiseControlIncreaseSpeed()
+	 	exit
+	 }
+	 
+	 /**
+	  * Test if CruiseControl memorize speed to 41 and if when we accelerate to 50 km/h 
+	  * and activate the cruise control, it decrease the speed to 41
+	  * Like Scenario 4 of CruiseControl.feature
+	  */
+	  @Test
+	  operation testCruiseControlDecreaseSpeedToMemSpeed() {
+	  	enter
+	  	cruiseControlIncreaseSpeed()
+	  	
+	  	raise accelerate
+	  	proceed 2 cycle
+	  	assert(active(CruiseControl.CC_On.r1.Idle))
+	  	assert(active(Car.On.r1.Accelerating))
+	  	
+	  	while (speed != 51) {
+	  		proceed 100ms
+	  	}
+	  	assert(speed == 51)
+	  	
+	  	raise accelerate
+	  	proceed 1 cycle
+	  	assert(active(Car.On.r1.Driving))
+	  	
+	  	raise resume
+	  	proceed 1 cycle
+	  	assert(active(CruiseControl.CC_On.r1.SetSpeed))
+	  	
+	  	while (!active(CruiseControl.CC_On.r1.Active)) {
+			proceed 1 cycle	  		
+	  	}
+	  	assert(active(CruiseControl.CC_On.r1.Active))
+	  	assert(memSpeed == 41)
+	  	assert(speed == 41)
+	  	exit
+	  }
+}
