@@ -16,6 +16,8 @@ import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot
 import org.yakindu.sct.model.sgraph.FinalState
 import org.yakindu.sct.model.sgraph.EntryKind
 import be.ac.umons.bol.generator.sismic.specification.SpecificationTransition
+import org.yakindu.sct.model.sgraph.Choice
+import org.yakindu.sct.model.sgraph.Synchronization
 
 /**
  * Generator to create a statechart for Sismic library in Python
@@ -117,6 +119,12 @@ class SismicGenerator implements ISGraphGenerator {
 			«IF historyState !== null»
 				«historyState.generate»
 			«ENDIF»«listFinalState.clear»
+			«FOR vertex : vertices.filter(Choice)»
+				«vertex.generate»
+			«ENDFOR»
+			«FOR vertex : vertices.filter(Synchronization)»
+				«vertex.generate»
+			«ENDFOR»
 	'''
 	
 	/**
@@ -183,6 +191,14 @@ class SismicGenerator implements ISGraphGenerator {
 		- name: «name»
 		  type: final
 	'''
+	
+	def dispatch String generate(Choice it) {
+		throw new Exception("The Choice state isn't managed by this generator...")
+	}
+	
+	def dispatch String generate(Synchronization it) {
+		throw new Exception("Impossible to generate the synchronization bar into statechart for Sismic...")
+	}
 	
 	/**
 	 * Generate the history states

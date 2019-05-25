@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import be.ac.umons.bol.generator.sismic.Utils;
+
 public class Specification {
     private String event = "";
     private String guard = "";
@@ -65,6 +67,7 @@ public class Specification {
 
     private void extractSpecifications(String specification) {
         String txt = specification.replaceAll("\\n", " ");
+        Utils.searchBinaryOperator(txt);
 
         int indexG = txt.indexOf("["); // check if it exists guards
         int indexA = txt.indexOf("/"); // check if it exists actions
