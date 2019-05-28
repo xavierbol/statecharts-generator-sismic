@@ -28,6 +28,14 @@ public class Specification {
     		treatActions(actions);
     	}
     }
+    
+    public Specification(String event, String guard, ArrayList<String> actions) {
+        this.event = event;
+        this.guard = guard;
+        this.listActions = new ArrayList<>(actions.size());
+
+        this.listActions.addAll(actions);
+    }
 
     public String getEvent() {
         return event;
@@ -175,6 +183,24 @@ public class Specification {
         }
 
         return res.toString();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Specification) {
+            Specification temp = (Specification) o;
+
+            if (event.equals(temp.getEvent()) && guard.equals(temp.getGuard()) && listActions.size() == temp.listActions.size()) {
+                for (int i = 0; i < listActions.size(); i++) {
+                    if (!listActions.get(i).equals(temp.listActions.get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

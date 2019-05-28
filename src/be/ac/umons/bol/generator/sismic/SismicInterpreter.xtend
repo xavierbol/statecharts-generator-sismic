@@ -17,16 +17,13 @@ abstract class SismicInterpreter {
 		from sismic.interpreter import Interpreter
 		from sismic.model import MacroStep
 		
-		«IF specificationRoot !== null && specificationRoot.operations !== null && !specificationRoot.operations.empty»
-			«FOR operation : specificationRoot.operations»
-				«operation»
-					...
-				
-				
-			«ENDFOR»
-			context = «makeContext(specificationRoot.context)»
-		«ELSE»
-			context = {}
+		«IF specificationRoot !== null && specificationRoot.listInterfaces !== null && !specificationRoot.listInterfaces.empty»
+			«specificationRoot.generatePython()»
+			«IF specificationRoot.context.empty»
+				context = {}
+			«ELSE»
+				context = «makeContext(specificationRoot.context)»
+			«ENDIF»
 		«ENDIF»
 		
 		def set_up() -> Interpreter:

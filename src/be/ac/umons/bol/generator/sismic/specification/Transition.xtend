@@ -34,8 +34,24 @@ class Transition {
 		this.specification.addAction(action)
 	}
 	
+	new(String name, String event, String guard, ArrayList<String> actions) {
+		this(name)
+		specification = new SpecificationTransition(event, guard, actions)
+	}
+	
 	def addAction(String action) {
 		specification.addAction(action)
+	}
+	
+	override equals(Object obj) {
+		if (obj instanceof Transition) {
+            val temp = obj as Transition;
+            if (nameState.equals(temp.nameState) && specification.equals(temp.specification)) {
+                return true;
+            }
+        }
+
+        return false;
 	}
 	
 	def generate() '''

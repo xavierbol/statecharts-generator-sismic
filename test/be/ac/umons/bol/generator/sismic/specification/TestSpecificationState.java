@@ -1,9 +1,9 @@
 package be.ac.umons.bol.generator.sismic.specification;
 
+import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import be.ac.umons.bol.generator.sismic.specification.SpecificationState;
 
 public class TestSpecificationState {
     String specification;
@@ -92,8 +92,45 @@ public class TestSpecificationState {
     			"	power = power - 300;\n" + 
     			"	display_set(\"POWER: \", power)";
     	
-    	specificationState = new SpecificationState("program mode", specification);
-    	
-    	
+    	String name = "program mode";
+        specificationState = new SpecificationState(name, specification);
+        ArrayList<Transition> expectedListTransitions = new ArrayList<>();
+        ArrayList<String> expectedActions = new ArrayList<>();
+        expectedActions.add("power = POWER_DEFAULT");
+        expectedActions.add("display_set(\"POWER: \", power)");
+        Transition expectedTransition = new Transition(name, "power_reset", "", expectedActions);
+        expectedListTransitions.add(expectedTransition);
+        expectedActions.clear();
+
+        expectedActions.add("power = power + 300");
+        expectedActions.add("display_set(\"POWER: \", power)");
+        expectedTransition = new Transition(name, "power_inc", "power <= 1200", expectedActions);
+        expectedListTransitions.add(expectedTransition);
+        expectedActions.clear();
+
+        expectedActions.add("power = power - 300");
+        expectedActions.add("display_set(\"POWER: \", power)");
+        expectedTransition = new Transition(name, "power_dec", "power >= 0", expectedActions);
+        expectedListTransitions.add(expectedTransition);
+
+        Assert.assertEquals(expectedListTransitions.size(), specificationState.getListOtherEvent().size());
+        for (int i = 0; i < expectedListTransitions.size(); i++) {
+            Assert.assertEquals(expectedListTransitions.get(i).getNameState(), specificationState.getListOtherEvent().get(i).getNameState());
+            Assert.assertEquals(expectedListTransitions.get(i).getSpecification(), specificationState.getListOtherEvent().get(i).getSpecification());
+        }
+    }
+    
+    @Test
+    public void testEveryEventWithGuard() {
+        specification = "every 5s [coucou == constante || Bonjour.hello != constante]\n" +
+                "/ coucou += 1";
+
+        specificationState = new SpecificationState("test", specification);
+
+        Assert.assertNotNull(specificationState.getEveryEvent());
+
+        for (String action : specificationState.getEveryEvent().getActions()) {
+            System.out.println(action);
+        }
     }
 }

@@ -1,9 +1,15 @@
 package be.ac.umons.bol.generator.sismic.specification
 
+import java.util.ArrayList
+
 class SpecificationTransition extends Specification {
 	
 	new(String specification) {
 		super(specification)
+	}
+	
+	new(String event, String guard, ArrayList<String> actions) {
+		super(event, guard, actions)
 	}
 	
 	def mergeSpecification(SpecificationTransition specification) {

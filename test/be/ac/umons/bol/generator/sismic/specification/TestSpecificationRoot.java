@@ -1,5 +1,7 @@
 package be.ac.umons.bol.generator.sismic.specification;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,28 +19,31 @@ public class TestSpecificationRoot {
                 + "in event floorSelected : integer\n\n"
                 + "operation openDoors():void\n"
                 + "operation closeDoors():void";
+        
         sr = new SpecificationRoot(specification);
-        Assert.assertEquals(2, sr.getVariables().size());
         
         String[] expectedVariables = {"current = 0", "destination = 0"};
-        
-        for (int i = 0; i < expectedVariables.length; i++) {
-            Assert.assertEquals(expectedVariables[i], sr.getVariables().get(i));
-        }
-        
-        Assert.assertEquals(2, sr.getOperations().size());
-        
         String[] expectedOperations = {"def openDoors() -> None:", "def closeDoors() -> None:"};
-        
-        for (int i = 0; i < expectedOperations.length; i++) {
-            Assert.assertEquals(expectedOperations[i], sr.getOperations().get(i));
-        }
-        
         String[] expectedContext = {"openDoors", "closeDoors"};
         
+        // Check interface
+        Assert.assertEquals(1, sr.getListInterfaces().size());
+        
+        Interface _interface = sr.getListInterfaces().get(0);
+        
+        for (int i = 0; i < expectedVariables.length; i++) {
+            Assert.assertEquals(expectedVariables[i], _interface.getVariables().get(i));
+        }
+        
+        for (int i = 0; i < expectedOperations.length; i++) {
+            Assert.assertEquals(expectedOperations[i], _interface.getOperations().get(i));
+        }
+        
+        // Check the context        
         for (int i = 0; i < expectedContext.length; i++) {
             Assert.assertEquals(expectedContext[i], sr.getContext().get(i));
-        }
+        }        
+        
     }
     
     @Test
@@ -65,15 +70,23 @@ public class TestSpecificationRoot {
         
         sr = new SpecificationRoot(specification);
         
-        Assert.assertEquals(1, sr.getVariables().size());
-        Assert.assertEquals(1, sr.getOperations().size());
+        String[] expectedInterfaces = {
+                ""
+        };
+        String[] expectedVariable = {
+                "elapsed_time = 0"
+        };
+        String[] expectedOperation = {
+                "def refresh(time: float) -> None:"
+        };
         
-        String expectedVariable = "elapsed_time = 0";
-        String expectedOperation = "def refresh(time: float) -> None:";
+        Assert.assertEquals(expectedInterfaces.length, sr.getListInterfaces().size());
+        for (int i = 0; i < expectedInterfaces.length; i++) {
+            Assert.assertEquals(expectedInterfaces[i], sr.getListInterfaces().get(i).getName());
+        }
         
-        Assert.assertEquals(expectedVariable, sr.getVariables().get(0));
-        Assert.assertEquals(expectedOperation, sr.getOperations().get(0));
-        
+        Assert.assertArrayEquals(expectedVariable, sr.getListInterfaces().get(0).getVariables().toArray());
+        Assert.assertArrayEquals(expectedOperation, sr.getListInterfaces().get(0).getOperations().toArray());
     }
 
     @Test
@@ -94,23 +107,26 @@ public class TestSpecificationRoot {
         
         sr = new SpecificationRoot(specification);
         
-        String expectedVariable = "current = 0";
+        String[] expectedInterfaces = {
+                "watch"
+        };
+        String[] expectedVariables = {
+                "current = 0"
+        };
         String[] expectedOperations = {
-                "def resetDisplay() -> None:", 
-                "def ensureTimer() -> None:",
-                "def syncDisplay() -> None:",
-                "def freezeDisplay() -> None:",
-                "def stopTimer() -> None:"
-                };
+                "def resetDisplay(self) -> None:", 
+                "def ensureTimer(self) -> None:",
+                "def syncDisplay(self) -> None:",
+                "def freezeDisplay(self) -> None:",
+                "def stopTimer(self) -> None:"
+        };
         
-        Assert.assertEquals(1, sr.getVariables().size());
-        Assert.assertEquals(expectedOperations.length, sr.getOperations().size());
-        
-        Assert.assertEquals(expectedVariable, sr.getVariables().get(0));
-        
-        for (int i = 0; i < expectedOperations.length; i++) {
-            Assert.assertEquals(expectedOperations[i], sr.getOperations().get(i));            
-        }
+        Assert.assertEquals(expectedInterfaces.length, sr.getListInterfaces().size());
+        Assert.assertEquals(expectedInterfaces[0], sr.getListInterfaces().get(0).getName());
+        Assert.assertEquals(expectedVariables.length, sr.getListInterfaces().get(0).getVariables().size());
+        Assert.assertArrayEquals(expectedVariables, sr.getListInterfaces().get(0).getVariables().toArray());
+        Assert.assertEquals(expectedOperations.length, sr.getListInterfaces().get(0).getOperations().size());
+        Assert.assertArrayEquals(expectedOperations, sr.getListInterfaces().get(0).getOperations().toArray());
     }
     
     @Test
@@ -161,6 +177,10 @@ public class TestSpecificationRoot {
                 "display_clear"
         };
         
+        String[] expectedInterfaces = {
+                ""
+        };
+        
         String[] expectedVariables = {
                 "power = 0",
                 "POWER_DEFAULT = 900",
@@ -175,15 +195,74 @@ public class TestSpecificationRoot {
                 "def beep(number: int) -> None:"
         };
         
-        Assert.assertEquals(expectedVariables.length, sr.getVariables().size());
-        Assert.assertEquals(expectedOperations.length, sr.getOperations().size());
+        Assert.assertEquals(expectedInterfaces.length, sr.getListInterfaces().size());
+        Assert.assertEquals(expectedInterfaces[0], sr.getListInterfaces().get(0).getName());
+        Assert.assertArrayEquals(expectedVariables, sr.getListInterfaces().get(0).getVariables().toArray());
+        Assert.assertArrayEquals(expectedOperations, sr.getListInterfaces().get(0).getOperations().toArray());
+    }
+    
+    @Test
+    public void testMultipleInterfaceInSpecification() {
+        specification = "@EventDriven\n"
+                + "// Use the event driven execution model.\n"
+                + "// Runs a run-to-completion step\n"
+                + "// each time an event is raised.\n"
+                + "// Switch to cycle based behavior\n"
+                + "// by specifying '@CycleBased(200)'\n"
+                + "// instead.\n\n"
+                + "@ChildFirstExecution\n"
+                + "// In composite states, execute\n"
+                + "// child states first.\n"
+                + "// @ParentFirstExecution does the opposite.\n\n"
+                + "interface:\n"
+                + "operation hello()\n"
+                + "var coucou: integer\n"
+                + "const constante: integer = 0\n\n"
+                + "interface Bonjour:\n"
+                + "var hello: integer\n"
+                + "operation aurevoir()";
         
-        for (int i = 0; i < expectedVariables.length; i++) {
-            Assert.assertEquals(expectedVariables[i], sr.getVariables().get(i));
+        sr = new SpecificationRoot(specification);
+        
+        // Check if we have the correct interface into the ArrayList
+        String[] expectedInterfaces = {
+                "", "Bonjour"
+        };
+        
+        Assert.assertEquals(expectedInterfaces.length, sr.getListInterfaces().size());
+        
+        for (int i = 0; i < expectedInterfaces.length; i++) {
+            Assert.assertEquals(expectedInterfaces[i], sr.getListInterfaces().get(i).getName());
         }
         
-        for (int i = 0; i < expectedOperations.length; i++) {
-            Assert.assertEquals(expectedOperations[i], sr.getOperations().get(i));
-        }
+        // Check the content of first interface
+        String[] expectedOperations = {
+                "def hello() -> None:"
+        };
+        
+        String[] expectedVariables = {
+                "coucou = 0", "constante = 0"
+        };
+        
+        Assert.assertEquals(expectedOperations.length, sr.getListInterfaces().get(0).getOperations().size());
+        Assert.assertArrayEquals(expectedOperations, sr.getListInterfaces().get(0).getOperations().toArray());
+        
+        Assert.assertEquals(expectedVariables.length, sr.getListInterfaces().get(0).getVariables().size());
+        Assert.assertArrayEquals(expectedVariables, sr.getListInterfaces().get(0).getVariables().toArray());
+        
+        // Check the content of second interfaces
+        expectedOperations = new String[] {
+                "def aurevoir(self) -> None:"
+        };
+        
+        expectedVariables = new String[] {
+                "hello = 0"
+        };
+        
+        Assert.assertEquals(expectedOperations.length, sr.getListInterfaces().get(1).getOperations().size());
+        Assert.assertArrayEquals(expectedOperations, sr.getListInterfaces().get(1).getOperations().toArray());
+        
+        Assert.assertEquals(expectedVariables.length, sr.getListInterfaces().get(1).getVariables().size());
+        Assert.assertArrayEquals(expectedVariables, sr.getListInterfaces().get(1).getVariables().toArray());
     }
 }

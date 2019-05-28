@@ -6,6 +6,7 @@ encoding//.settings/org.eclipse.xtend.shared.ui.prefs=UTF-8
 encoding//META-INF/MANIFEST.MF=UTF-8
 encoding//examples/impossible-to-generate/GuardInEntryOrExitState.sct=UTF-8
 encoding//examples/impossible-to-generate/synchronization.sct=UTF-8
+encoding//examples/test.sct=UTF-8
 encoding//src/be/ac/umons/bol/generator/sismic/IFeatureConstants.java=UTF-8
 encoding//src/be/ac/umons/bol/generator/sismic/SismicGenerator.xtend=UTF-8
 encoding//src/be/ac/umons/bol/generator/sismic/SismicGeneratorDefaultValueProvider.java=UTF-8

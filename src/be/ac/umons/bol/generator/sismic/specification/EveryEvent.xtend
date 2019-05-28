@@ -11,6 +11,7 @@ class EveryEvent {
 	static String EVERY = "_every"
 	@Accessors float time
 	@Accessors String nameState
+	@Accessors String guard
 	@Accessors ArrayList<String> actions
 	
 	new(String name, float time) {
@@ -34,7 +35,7 @@ class EveryEvent {
 			- name: «nameState»
 			  transitions:
 			  	- target: «nameState»
-			  	  guard: after(«time»)
+			  	  guard: after(«time») and «guard»
 			  	  «IF actions.length == 1»
 			  	  	action: «actions.get(0)»
 			  	  «ELSE»

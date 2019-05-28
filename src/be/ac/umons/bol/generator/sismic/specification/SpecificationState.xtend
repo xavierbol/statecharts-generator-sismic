@@ -35,7 +35,7 @@ class SpecificationState {
 			val tab = specification.split('/')
 			
 			if (tab.length == 1) {
-				if (specification.contains('/')) {
+				if (specification.contains('/') || lastEvent === null && event.empty) {
 					event = tab.get(0).trim()
 					lastEvent = defineEvent(event)
 				} else {
@@ -46,8 +46,11 @@ class SpecificationState {
 					}					
 				}
 			} else {
-				event = tab.get(0).trim()
-				lastEvent = defineEvent(event)
+				if (!tab.get(0).trim().empty) {
+					event = tab.get(0).trim()
+					lastEvent = defineEvent(event)
+				}
+				
 				if (lastEvent === null) {
 					manageActions(event, tab.get(1).trim())
 				} else {
@@ -191,7 +194,7 @@ class SpecificationState {
 	 * @param event is the current event to find and manage the eventual every event
 	 */
 	private def manageEveryEvent(String event) {
-		var regex = "every (\\d+)(ms|s|m|h)";
+		var regex = "every (\\d+)(ms|s|m|h)(.*)";
         var p = Pattern.compile(regex);
         var m = p.matcher(event);
 		
@@ -199,6 +202,7 @@ class SpecificationState {
             var eventTime = m.group(0);
             var value = Float.valueOf(m.group(1));
             var timeUnit = m.group(2);
+            var guard = m.group(3);
 
             switch (timeUnit) {
                 case "ms":
@@ -210,12 +214,29 @@ class SpecificationState {
             }
             
             everyEvent = new EveryEvent(nameState, value)
+            
+            if (guard !== null) {
+            	guard = treatGuard(guard)
+            	everyEvent.guard = guard
+            }
         }
 	}
 	
+	private def treatGuard(String guard) {
+		var g = guard.replaceAll("\\[|\\]", "").trim()
+		g = g.replaceAll("(\\s)&&(\\s)", "$1and$2") // replace && by and
+        g = g.replaceAll("(\\s)\\|\\|(\\s)", "$1or$2") // replace || by or
+        g = g.replaceAll("\\btrue\\b", "True") // replace true by True
+        g = g.replaceAll("\\bfalse\\b", "False") // replace true by False
+        g = g.replaceAll("!([^=])", "not $1") // replace negation ! by not
+        g = g.replaceAll("(active\\()(.*\\.(.*))(\\))", "$1'$3'$4") // replace for example active(Car.On.r1.Driving) by active('Driving')
+        
+        return g
+    }
+	
 	/**
 	 * Generate the extracted data into this current state
-	 * The onecycle, always and every event aren't generated here
+	 * The oncycle, always and every event aren't generated here
 	 */
 	def generate() '''
 	  «IF listEntryEvent !== null && listEntryEvent.length > 0»

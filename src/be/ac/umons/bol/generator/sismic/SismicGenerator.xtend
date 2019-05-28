@@ -192,10 +192,19 @@ class SismicGenerator implements ISGraphGenerator {
 		  type: final
 	'''
 	
+	/**
+	 * Generate the Choice state
+	 * Actually, it's not possible to generate this state
+	 */
 	def dispatch String generate(Choice it) {
 		throw new Exception("The Choice state isn't managed by this generator...")
 	}
 	
+	/**
+	 * Generate the Synchronization,
+	 * It's impossible to generate this for Sismic.
+	 * This method return an exception if a Synchronization is containing in a statechart to generate
+	 */
 	def dispatch String generate(Synchronization it) {
 		throw new Exception("Impossible to generate the synchronization bar into statechart for Sismic...")
 	}
