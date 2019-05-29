@@ -9,19 +9,27 @@ class Interface {
 	@Accessors ArrayList<String> variables;
 	@Accessors ArrayList<String> operations;
 	
+	/**
+	 * Default constructor
+	 */
 	new() {
 		variables = new ArrayList
 		operations = new ArrayList
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param name : the name of the interface
+	 */
 	new(String name) {
 		this()
 		this.name = name
 	}
 	
 	/**
-	 * Return true if this object is the default interface in Statechart
-	 * and false otherwise
+	 * @return 	- 	true, if this object is the default interface in Statechart
+	 * 			-	false, otherwise
 	 */
 	def isDefaultInterface() {
 		return name.empty
@@ -29,6 +37,8 @@ class Interface {
 	
 	/**
 	 * Add new variable
+	 * 
+	 * @param variable the extracted variable in SpecificationRoot
 	 */
 	def addVariable(String variable) {
 		variables.add(variable)
@@ -40,11 +50,15 @@ class Interface {
 	def addOperation(String name, String parameters, String typeReturn) {
 		var StringBuilder funcPython = new StringBuilder("def " + name + "(")
 		
+		// Add self in the operation if the interface is not the default
+		// because we generate a class for the named interfaces
 		if (!isDefaultInterface) {
 			funcPython.append("self")
 		}
 			
-		if (parameters !== null) {
+		// If it exists some parameters into the operations
+		if (parameters !== null && !parameters.empty) {
+			// If the interface is not the default add a coma to add parameters in the function
 			if (!isDefaultInterface) {
 				funcPython.append(", ")
 			}			

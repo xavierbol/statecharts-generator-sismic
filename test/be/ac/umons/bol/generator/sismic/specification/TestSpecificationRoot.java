@@ -1,11 +1,7 @@
 package be.ac.umons.bol.generator.sismic.specification;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import be.ac.umons.bol.generator.sismic.specification.SpecificationRoot;
 
 public class TestSpecificationRoot {
     private String specification;

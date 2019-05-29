@@ -62,4 +62,49 @@ public class TestSpecificationTransition {
 	    assertTrue(st.getGuard()!= null && !st.getGuard().isEmpty());
 	    assertEquals("floor < currentFloor and floor >=0", st.getGuard());
 	}
+	
+	@Test
+    public void testSpecificationInState() {
+        specification = "power_inc [power <= 1200] /\n" + 
+                "   power = power + 300;\n" + 
+                "   display_set(\"POWER: \", power)\n";
+        
+        st = new SpecificationTransition(specification);
+        
+        String expectedEvent = "power_inc";
+        String expectedGuard = "power <= 1200";
+        String[] expectedActions = {
+                "power = power + 300",
+                "display_set(\"POWER: \", power)"
+        };
+        
+        assertEquals(expectedEvent, st.getEvent());
+        assertEquals(expectedGuard, st.getGuard());
+        assertTrue(st.getListActions().size() == expectedActions.length);
+        
+        for (int i = 0; i < expectedActions.length; i++) {
+            assertEquals(expectedActions[i], st.getListActions().get(i));
+        }
+    }
+    
+    @Test
+    public void testSpecification() {
+        specification = "every 5s / coucou";
+        
+        st = new SpecificationTransition(specification);
+        String expectedEvent = "every 5s";
+        String expectedAction = "coucou";
+        
+        assertEquals(expectedEvent, st.getEvent());
+        assertEquals(expectedAction, st.getListActions().get(0));
+        
+        specification = "oncycle [coucou]";
+        st = new SpecificationTransition(specification);
+        
+        expectedEvent = "oncycle";
+        String expectedGuard = "coucou";
+        
+        assertEquals(expectedEvent, st.getEvent());
+        assertEquals(expectedGuard, st.getGuard());
+    }
 }

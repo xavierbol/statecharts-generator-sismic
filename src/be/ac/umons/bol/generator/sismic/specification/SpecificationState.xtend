@@ -142,7 +142,7 @@ class SpecificationState {
 		}
 	}
 	
-	private def searchTransition(Specification specification) {
+	private def searchTransition(SpecificationTransition specification) {
 		if (listOtherEvent !== null) {
 			for (var i = 0; i < listOtherEvent.size(); i++) {
 				if (listOtherEvent.get(i).specification.haveSameTrigger(specification)) {
