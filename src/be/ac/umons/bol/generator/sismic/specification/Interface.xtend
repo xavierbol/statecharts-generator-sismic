@@ -88,6 +88,13 @@ class Interface {
 		operations.add(funcPython.toString())
 	}
 	
+	/**
+	 * Check if the current interface contains the variable
+	 * 
+	 * @param variable : the variable to search
+	 * 
+	 * @return boolean : true if this variable is found, false otherwise
+	 */
 	def containsVariable(String variable) {
 		return variables.filter(name | name.equals(variable)).head !== null
 	}

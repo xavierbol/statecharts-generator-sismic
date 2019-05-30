@@ -22,6 +22,12 @@ class SpecificationTransition {
 		}
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param specification : the string to extract the event and/or the guard
+	 * @param actions : the actions to extract and add in the current object
+	 */
 	new(String specification, String actions) {
 		if (!specification.empty) {
 			extractSpecifications(specification)
@@ -35,7 +41,7 @@ class SpecificationTransition {
 	
 	/**
 	 * Constructor
-	 * It's use to facilitate the unit test
+	 * It's use only to facilitate the unit test
 	 * 
 	 * @param event : an event
 	 * @param guard : a guard
@@ -48,6 +54,13 @@ class SpecificationTransition {
 		this.listActions.addAll(actions)
 	}
 	
+	/**
+	 * check if current SpecificationTransition object has the same event and guard than the SpecificationTransition object in parameter
+	 * 
+	 * @param specification : the SpecificationTransition object to check the event and guard with the current object
+	 * 
+	 * @return true, if they have the same trigger (event and guard), false otherwise
+	 */
 	def haveSameTrigger(SpecificationTransition specification) {
 		if (specification === null) {
 			return false;
@@ -56,6 +69,9 @@ class SpecificationTransition {
 		return event.equals(specification.event) && guard.equals(specification.guard)
 	}
 	
+	/**
+	 * Add an action into the list of actions
+	 */
 	def addAction(String action) {
 		if (listActions === null) {
 			listActions = new ArrayList
@@ -64,32 +80,37 @@ class SpecificationTransition {
 		treatActions(action)
 	}
 	
+	/**
+	 * extract event, guard and actions in the parameter specification
+	 * 
+	 * @param specification : string to extract the event, guard and actions
+	 */
 	private def extractSpecifications(String specification) {
 		var txt = specification.replaceAll("\\n", " ")
 		Utils.searchBinaryOperator(txt)
 		
-		var indexG = txt.indexOf("[") // check if it exists guard
-		var indexA = txt.indexOf("/") // check if it exists action
+		var indexG = txt.indexOf("[") // search if it exists guard
+		var indexA = txt.indexOf("/") // search if it exists action
 		
-		if (indexA != -1) {
-			val transitionWithAction = txt.split("/")
+		if (indexA != -1) { // check if it exists an action into the string
+			val transitionWithAction = txt.split("/") // create table that contains "event [guard]" as first element and the actions in the second element
 			treatActions(transitionWithAction.get(1))
 			txt = transitionWithAction.get(0).trim()
 		} 
 		
 		if (indexA != 0) { // if the index isn't the first character in the string
-			// then it exists either event, event or both
+			// then it exists either event, guard or both
 			if (indexG != -1) { // then there is a guard
 				var firstIndex = txt.indexOf("[")
 				var endIndex = txt.indexOf("]", firstIndex)
-				val charGuards = newCharArrayOfSize(endIndex - (firstIndex + 1))
+				val charGuards = newCharArrayOfSize(endIndex - (firstIndex + 1)) // correspond to «new char[endIndex - (firstIndex + 1)]» in Java
 				
 				txt.getChars(firstIndex + 1, endIndex, charGuards, 0)
 				guard = String.valueOf(charGuards)
-				treatGuard()
+				treatGuard() // treat the guard to match to a guard for a statechart defined in Sismic
 				
 				if (indexG != 0) {
-					val charEvent = newCharArrayOfSize(firstIndex)
+					val charEvent = newCharArrayOfSize(firstIndex) // correspond to «new char[firstIndex]» in Java
 					
 					txt.getChars(0, firstIndex, charEvent, 0)
 					
@@ -102,11 +123,16 @@ class SpecificationTransition {
 		}
 	}
 	
+	/**
+	 * extract all actions containing in the string in parameter and treat the actions to suit with the actions defined in Sismic
+	 * 
+	 * @param action : the string contains one or more actions
+	 */
 	private def treatActions(String action) {
 		var a = action.replaceAll("\\btrue\\b", "True") // replace true by True
         a = a.replaceAll("\\bfalse\\b", "False") // replace false by False
-        a = a.replaceAll("raise\\s*(\\w+\\.*\\w*);?", "send(\"$1\")")
-        a = a.replaceAll("\\bvalueof\\s*\\((\\w+)\\)\\s*", "event.$1")
+        a = a.replaceAll("raise\\s*(\\w+\\.*\\w*);?", "send(\"$1\")") // convert raise event into send("event")
+        a = a.replaceAll("\\bvalueof\\s*\\((\\w+)\\)\\s*", "event.$1") // convert valueof(nameEvent) into event.nameEvent 
         
         if (a.contains(";")) {
             val String[] tabActions = action.split(";")
@@ -119,15 +145,21 @@ class SpecificationTransition {
         }
 	}
 	
+	/**
+	 * Transform the extracted guard into a suitable guard for a statechart defined in Sismic
+	 */
 	private def treatGuard() {
         guard = guard.replaceAll("(\\s)&&(\\s)", "$1and$2") // replace && by and
         guard = guard.replaceAll("(\\s)\\|\\|(\\s)", "$1or$2") // replace || by or
         guard = guard.replaceAll("\\btrue\\b", "True") // replace true by True
         guard = guard.replaceAll("\\bfalse\\b", "False") // replace true by False
         guard = guard.replaceAll("!([^=])", "not $1") // replace negation ! by not
-        guard = guard.replaceAll("(active\\()(.*\\.(.*))(\\))", "$1'$3'$4") // replace for example active(Car.On.r1.Driving) by active('Driving')
+        guard = guard.replaceAll("(active\\()(.*\\.(.*))(\\))", "$1'$3'$4") // replace (for example) active(Car.On.r1.Driving) by active('Driving')
     }
     
+    /**
+     * Transform the extracted event into a suitable event for a statechart defined in Sismic
+     */
     private def treatEvent() {
     	val regex = "after (\\d+)\\s*(ms|s|m|h)"
     	val p = Pattern.compile(regex)

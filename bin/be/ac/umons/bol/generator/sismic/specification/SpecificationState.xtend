@@ -11,13 +11,18 @@ enum Event {
 
 class SpecificationState {
 	@Accessors String nameState
-	// List containing all actions according to the type of the event
 	@Accessors ArrayList<String> listEntryEvent
 	@Accessors ArrayList<String> listExitEvent
 	@Accessors ArrayList<Transition> listOtherEvent
 	@Accessors Transition transition
 	@Accessors EveryEvent everyEvent
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param name : the name of state
+	 * @param specifications : the contains of specification attribute in a State
+	 */
 	new(String name, String specifications) {
 		nameState = name
 		if (specifications !== null && !specifications.empty) {
@@ -25,6 +30,11 @@ class SpecificationState {
 		}
 	}
 	
+	/**
+	 * retrieve all events, guards and actions in the specification attribute of a State in the statechart of Yakindu
+	 * 
+	 * @param specifications : the contains of specification attribute of a state to extract data.
+	 */
 	private def retrieveSpecifications(String specifications) {
 		val tabSpecifications = specifications.replaceAll('\t', '').split('\n')
 		
@@ -112,6 +122,12 @@ class SpecificationState {
 		return null
 	}
 	
+	/**
+	 * manage the gathered actions in the specification attribute
+	 * 
+	 * @param event : the event that it release the actions. This event correspond to enum @see{Event}
+	 * @param action : the actions to extract 
+	 */
 	private def manageActions(Event event, String action) {
 		val a = treatActions(action)
 		if (action.contains(";")) {
@@ -125,6 +141,12 @@ class SpecificationState {
         }
 	}
 	
+	/**
+	 * manage the actions of other events that are defined by user
+	 * 
+	 * @param event : the corresponding event, this event can contains 
+	 * @param action the actions to extract
+	 */
 	private def manageActions(String event, String action) {
 		val specification = new SpecificationTransition(event)
 		var transition = searchTransition(specification)
@@ -142,6 +164,14 @@ class SpecificationState {
 		}
 	}
 	
+	/**
+	 * search if it exist an instance of SpecificationTransition with the same event and guard in the listOtherEvent
+	 * if yes, then return this instance, otherwise return null
+	 * 
+	 * @param the instance of SpecificationTransition to search if another instance in the list doesn't contain the same trigger (event and guard)
+	 * 
+	 * @return the SpecificationTransition instance containing the same event and guard than the instance in parameter, return null if it doesn't find.
+	 */
 	private def searchTransition(SpecificationTransition specification) {
 		if (listOtherEvent !== null) {
 			for (var i = 0; i < listOtherEvent.size(); i++) {

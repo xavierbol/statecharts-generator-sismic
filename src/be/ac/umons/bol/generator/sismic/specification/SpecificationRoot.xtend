@@ -14,7 +14,7 @@ import be.ac.umons.bol.generator.sismic.Utils
  * Les commentaires sont ignorés.
  * 
  * Limitation :
- * 	- Le mot-clé "internal" est écarté préféré utiliser le mot-clé "interface" dans Yakindu
+ * 	- Le mot-clé "internal" est écarté, il est préférable d'utiliser le mot-clé "interface" dans Yakindu
  * 
  * 
  * English :
@@ -35,6 +35,13 @@ class SpecificationRoot {
 	@Accessors ArrayList<String> variables;
 	@Accessors ArrayList<String> operations;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param specification : the specification attribute contains in sgraph:Statechart tag
+	 * 							this attribute must be extracted to have differents interfaces, 
+	 * 							variables and operations to define for the statechart in Sismic.
+	 */
 	new(String specification) {
 		if (!specification.empty) {
 			listInterfaces = new ArrayList
@@ -48,6 +55,11 @@ class SpecificationRoot {
 		}
 	}
 	
+	/**
+	 * extract variables, operations and/or operations in specification attribute of sgraph:Statechart tag
+	 * 
+	 * @param specification : the contains of specification attribute
+	 */
 	private def extractSpecification(String specification) {		
 		var p =  Pattern.compile(REGEX_INTERFACE)
 		var m = p.matcher(specification)

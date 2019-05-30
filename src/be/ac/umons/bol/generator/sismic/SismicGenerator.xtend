@@ -20,15 +20,21 @@ import org.yakindu.sct.model.sgraph.Choice
 import org.yakindu.sct.model.sgraph.Synchronization
 
 /**
- * Generator to create a statechart for Sismic library in Python
- * Sismic library use YAML file to define a statechart.
+ * Français :
+ * Ce générateur convertit un statechart défini dans Yakindu Statechart Tools en un statechart pour la librarie Python, Sismic.
+ * Pour créer un statechart défini en Sismic, le générateur doit créer un fichier YAML définissant le statechart.
+ * Cet outil crée également un autre fichier, un fichier Python.
+ * Dans ce fichier Python, il y a l'importation de l'interpréteur Sismic, avec un petit modèle pour commencer l'interprétation
+ * du statechart généré.
  * 
- * TODO:
- *  - Vérifier la gestion des évènements always et oncycle
- * 	- Gérer plusieurs interfaces créées dans un même statechart
+ * English :
+ * This generator convert a statechart defined in Yakindu Statechart Tools into a statechart for Sismic library in Python.
+ * To create a statechart defined in Sismic library, the generator must create a YAML file to define the statechart.
+ * This tool create also another file, a Python file.
+ * In this Python file, there are the importation of the interpreter Sismic, with a little template to beginning 
+ * the interpretation of the generated statechart.
  */
 class SismicGenerator implements ISGraphGenerator {
-	ArrayList<be.ac.umons.bol.generator.sismic.specification.Transition> listTransitionSuppl = null
 	SpecificationRoot specificationRoot
 	ArrayList <FinalState> listFinalState = new ArrayList
 
@@ -49,6 +55,10 @@ class SismicGenerator implements ISGraphGenerator {
 
 	/**
 	 * Generate a template for statechart object
+	 * 
+	 * @param it : the object of Statechart
+	 * 
+	 * @return the template
 	 */
 	def dispatch String generate(Statechart it) '''
 		statechart:
@@ -70,7 +80,9 @@ class SismicGenerator implements ISGraphGenerator {
 	/**
 	 * Search the name of the first state treated in the current region
 	 * 
-	 * region : the current region
+	 * @param region : the current region
+	 * 
+	 * @return the initialState of the region
 	 */
 	def private String initialState(Region region) {
 		region.vertices.filter(Entry).head.outgoingTransitions.head.target.name
@@ -79,9 +91,9 @@ class SismicGenerator implements ISGraphGenerator {
 	/**
 	 * Search a history State in the current region
 	 * 
-	 * region : the current region
+	 * @param region : the current region
 	 * 
-	 * return the entry that is a history state or null if there is no history state
+	 * @return the entry that is a history state or null if there is no history state
 	 */
 	def private Entry historyState(Region region) {
 		val entry = region.vertices.filter(Entry)
@@ -98,12 +110,17 @@ class SismicGenerator implements ISGraphGenerator {
 	}
 	
 	/**
-	 * Generate an region
+	 * Generate a template for an region
+	 * 
 	 * This region can be :
 	 * 	- The first region of the statechart
 	 *  - Other region of the Statechart
 	 * 
-	 * if it's the first region, it will add name and initial keyword in YAML file
+	 * if this region contains an entry state, it will add name and initial keyword in YAML file
+	 * 
+	 * @param the region
+	 * 
+	 * @return the template
 	 */
 	def dispatch String generate(Region it) '''
 		«IF vertices.filter(Entry).head !== null»
@@ -128,8 +145,13 @@ class SismicGenerator implements ISGraphGenerator {
 	'''
 	
 	/**
-	 * Generate State of the statechart
+	 * Generate a template for a state of the statechart
+	 * 
 	 * In Yakindu, a state is a Vertex with a type State
+	 * 
+	 * @param a state in statechart of Yakindu
+	 * 
+	 * @return the template
 	 */
 	def dispatch String generate(State it) {
 		val specificationState = new SpecificationState(name, specification)
@@ -184,8 +206,13 @@ class SismicGenerator implements ISGraphGenerator {
 	}
 	
 	/**
-	 * Generate the final states
-	 * Normally this final states are detected in outgoingTransition of the others states
+	 * Generate the template for a final state
+	 * 
+	 * Normally this final states are detected in method to generate the outgoingTransitions of the others states
+	 * 
+	 * @param a object of FinalState
+	 * 
+	 * @return the template for this FinalState object
 	 */
 	def dispatch String generate(FinalState it) '''
 		- name: «name»
@@ -194,7 +221,12 @@ class SismicGenerator implements ISGraphGenerator {
 	
 	/**
 	 * Generate the Choice state
+	 * 
 	 * Actually, it's not possible to generate this state
+	 * 
+	 * @param the Choice object
+	 * 
+	 * Not implemented
 	 */
 	def dispatch String generate(Choice it) {
 		throw new Exception("The Choice state isn't managed by this generator...")
@@ -204,18 +236,27 @@ class SismicGenerator implements ISGraphGenerator {
 	 * Generate the Synchronization,
 	 * It's impossible to generate this for Sismic.
 	 * This method return an exception if a Synchronization is containing in a statechart to generate
+	 * 
+	 * @param it : the Synchronization object containing in the statechart
+	 * 
+	 * @return an Exception, because it's impossible to have an equivalent in a statechart defined in Sismic 
 	 */
 	def dispatch String generate(Synchronization it) {
 		throw new Exception("Impossible to generate the synchronization bar into statechart for Sismic...")
 	}
 	
 	/**
-	 * Generate the history states
+	 * Generate the template for a history state
+	 * 
 	 * Yakindu define the history as an initial state with an attribute kind
 	 * to find the enumeration of this state
 	 * A history state has as value in kind attribute :
 	 * 	- EntryKind.DEEP_HISTORY
 	 * 	- EntryKind.SHALLOW_HISTORY
+	 * 
+	 * @param it : a history state
+	 * 
+	 * @return the template of this history state
 	 */
 	def dispatch String generate(Entry it) {
 		var history = ""
@@ -233,7 +274,7 @@ class SismicGenerator implements ISGraphGenerator {
 	}
 	
 	/**
-	 * Generate Transition of a state
+	 * Generate the template for a transition of a state
 	 */
 	def CharSequence generate(Transition it, be.ac.umons.bol.generator.sismic.specification.Transition transition) {
 		val spec = new SpecificationTransition(specification)
@@ -251,12 +292,5 @@ class SismicGenerator implements ISGraphGenerator {
 			- target: «target.name»
 			  «spec.generate»
 		'''
-	}
-
-	def write(File dir, String filename, String content) {
-		dir.mkdirs
-		val bos = new FileOutputStream(new File(dir.path + File::separator + filename))
-		bos.write(content.bytes)
-		bos.close
 	}
 }

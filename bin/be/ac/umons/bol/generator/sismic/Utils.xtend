@@ -1,8 +1,15 @@
 package be.ac.umons.bol.generator.sismic
 
 abstract class Utils {
-	private static String[] binaryOperators = #["«=", "»=", "&=", "^=", "|="]
+	static String[] binaryOperators = #["«=", "»=", "&=", "^=", "|="]
 	
+	/**
+	 * translate type defined in the language of Yakindu Statechart Tools for its statechart into suitable type for Python.
+	 * 
+	 * @param type : the type use in the statechart in Yakindu
+	 * 
+	 * @return the suitable type for Python
+	 */
 	static def translateTypeInPythonType(String type) {
 		switch (type) {
 			case "boolean":
@@ -21,6 +28,12 @@ abstract class Utils {
 		}
 	}
 	
+	/**
+	 * Search if the string contains binary operators
+	 * If yes, then return exception because it's not use in Sismic.
+	 * 
+	 * @param specification : the string to check if it doesn't contains any binary operators
+	 */
 	static def searchBinaryOperator(String specification) {
 		for (binaryOperator : binaryOperators) {
 			if (specification.contains(binaryOperator)) {
