@@ -4,8 +4,6 @@ import org.yakindu.sct.model.sgen.GeneratorEntry
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.yakindu.sct.generator.core.ISGraphGenerator
 import org.yakindu.sct.model.sgraph.Statechart
-import java.io.FileOutputStream
-import java.io.File
 import org.yakindu.sct.model.sgraph.Region
 import org.yakindu.sct.model.sgraph.Entry
 import org.yakindu.sct.model.sgraph.State

@@ -10,10 +10,6 @@ import java.util.ArrayList
  * Ces évènements seront traduits comme étant une
  * transition automatique vers le même état.
  * 
- * TODO :
- * Attention, il faudra vérifier si ce même état ne contient pas déjà une transition automatique vers lui,
- * si c'est le cas, alors il faut ajouter les actions du always ou oncycle dans la transition automatique existante.
- * 
  * English : 
  * This class add a new transition for statechart defined in Sismic, when we find a event 
  * with keyword «always» or «oncycle» or a event created by user in a state.

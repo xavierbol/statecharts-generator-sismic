@@ -3,7 +3,6 @@ package be.ac.umons.bol.generator.sismic.specification
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.ArrayList
 import java.util.regex.Pattern
-import be.ac.umons.bol.generator.sismic.Utils
 
 /**
  * Français :

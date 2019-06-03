@@ -9,6 +9,13 @@ enum Event {
 	ALWAYS, EVERY, ONCYCLE
 }
 
+/**
+ * Français :
+ * Cette classe gère le contenu de l'attribut specification dans la balise "Vertex" (Etat)
+ * 
+ * English : 
+ * This class manage the contains of the specification attribute in the "Vertex" tag (State)
+ */
 class SpecificationState {
 	@Accessors String nameState
 	@Accessors ArrayList<String> listEntryEvent

@@ -5,6 +5,13 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import be.ac.umons.bol.generator.sismic.Utils
 import java.util.regex.Pattern
 
+/**
+ * Français : 
+ * Cette classe permet de gérer l'attribut specification contenue dans la balise "outgoingTransitions"
+ * 
+ * English : 
+ * This class manage the specification attribute containing into "outgoingTransitions" tag.
+ */
 class SpecificationTransition {
 	@Accessors String event = ""
 	@Accessors String guard = ""

@@ -4,6 +4,13 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.ArrayList
 import be.ac.umons.bol.generator.sismic.Utils
 
+/**
+ * Français :
+ * Cette classe est utilisé pour faciliter l'extraction d'interfaces à l'intérieur d'un statechart en Yakindu.
+ * 
+ * English :
+ * This class is used to facilitate the extraction of interfaces into a statechart in Yakindu.
+ */
 class Interface {
 	@Accessors String name = ""
 	@Accessors ArrayList<String> variables;
@@ -46,6 +53,10 @@ class Interface {
 	
 	/**
 	 * Add new operation
+	 * 
+	 * @param name : the name of operation
+	 * @param parameters : an array containing the parameters of the operation
+	 * @param typeReturn : the type that the operation returns.
 	 */
 	def addOperation(String name, String parameters, String typeReturn) {
 		var StringBuilder funcPython = new StringBuilder("def " + name + "(")
@@ -103,6 +114,8 @@ class Interface {
 	 * Generate this Interface object into a Python file
 	 * If the interface is named, then create a class
 	 * else generate only the operations
+	 * 
+	 * @return String, the template for statechart in Sismic
 	 */
 	def generate() '''
 		«IF !name.empty»

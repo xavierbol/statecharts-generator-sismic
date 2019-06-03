@@ -41,8 +41,6 @@ abstract class SismicInterpreter {
 		    # Load statechart from yaml file
 		    «sc.name» = import_from_yaml(filepath='«sc.name».yaml')
 		
-		    context = {"elapsed_time": 0}
-		
 		    # Create an interpreter for this statechart
 		    return Interpreter(«sc.name», initial_context=context)
 		

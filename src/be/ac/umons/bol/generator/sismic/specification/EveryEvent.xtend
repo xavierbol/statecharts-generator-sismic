@@ -53,6 +53,8 @@ class EveryEvent {
 	
 	/**
 	 * Generate the translate the temporal event («every») for a statechart defined in Sismic
+	 * 
+	 * @return String, the template for statechart in Sismic. 
 	 */
 	def generate() '''
 		initial: «nameState»

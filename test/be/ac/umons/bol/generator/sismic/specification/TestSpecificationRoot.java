@@ -161,18 +161,6 @@ public class TestSpecificationRoot {
         
         sr = new SpecificationRoot(specification);
         
-        String[] expectedEvents = {
-                "item_removed", "item_placed",
-                "door_closed", "door_opened",
-                "cooking_start", "cooking_stop",
-                "lamp_on", "lamp_off",
-                "timer_inc", "timer_dec", "timer_tick", "timer_reset",
-                "heating_on", "heating_off",
-                "turntable_start", "turntable_stop",
-                "power_reset", "power_inc", "power_dec",
-                "display_clear"
-        };
-        
         String[] expectedInterfaces = {
                 ""
         };
