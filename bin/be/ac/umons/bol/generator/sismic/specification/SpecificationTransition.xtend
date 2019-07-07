@@ -208,15 +208,27 @@ class SpecificationTransition {
 	}
 	
 	/**
-	 * Generate the data extracted in the specification of the outgoingTransition tag
+	 * Generate the event for a statechart in Sismic
 	 */
-	def generate() '''
+	def generateEvent() '''
 		«IF !event.empty»
 			event: «event»
 		«ENDIF»
+	'''
+	
+	/**
+	 * Generate the guard for a statechart in Sismic
+	 */
+	def generateGuard() '''
 		«IF !guard.empty»
 			guard: «guard»
 		«ENDIF»
+	'''
+	
+	/**
+	 * Generate the actions for a statechart in Sismic
+	 */
+	def generateActions() '''
 		«IF listActions !== null && !listActions.empty»
 			«IF listActions.length == 1»
 				action: «listActions.get(0)»
@@ -227,6 +239,15 @@ class SpecificationTransition {
 					«ENDFOR»
 			«ENDIF»
 		«ENDIF»
+	'''
+	
+	/**
+	 * Generate the data extracted in the specification of the outgoingTransition tag
+	 */
+	def generate() '''
+		«generateEvent()»
+		«generateGuard()»
+		«generateActions()»
 	'''
 	
 	override equals(Object obj) {

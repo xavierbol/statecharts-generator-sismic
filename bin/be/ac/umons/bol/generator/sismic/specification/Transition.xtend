@@ -99,7 +99,17 @@ class Transition {
 	 * Generate the transition for a statechart defined in Sismic.
 	 */
 	def generate() '''
-		- target: «nameState»
-		  «specification.generate»
+		«IF !specification.event.empty»
+			- «specification.generateEvent()»
+			  «specification.generateGuard()»
+			  «specification.generateActions()»
+		«ELSE»
+			«IF !specification.guard.empty»
+				- «specification.generateGuard()»
+				  «specification.generateActions()»
+			«ELSE»
+				- «specification.generateActions()»
+			«ENDIF»
+		«ENDIF»
 	'''	
 }
